@@ -1,0 +1,23 @@
+@import 'tailwindcss';
+
+@import '@fortawesome/fontawesome-free/css/fontawesome.css';
+@import '@fortawesome/fontawesome-free/css/brands.css';
+@import '@fortawesome/fontawesome-free/css/regular.css';
+@import '@fortawesome/fontawesome-free/css/solid.css';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../../*.html';
+@source '../../src/**/*.{html,js}';
+@source '../../*.php';
+
+@theme {
+    --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    --color-brand-snow: #FEFDFF;
+    --color-brand-light: #DEF2FF;
+    --color-brand-primary: #008DE1;
+    --color-brand-accent: #727BDE;
+    --color-brand-dark: #31363F;
+    --color-brand-gray: #757575;
+    --color-brand-slate: #475569;
+}
