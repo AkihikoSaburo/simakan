@@ -56,7 +56,7 @@
                 </p>
             </div>
             <div class="flex-shrink-0">
-                <a href="form-input.php"
+                <a href="{{ route('bangsal.orders.create') }}"
                     class="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-brand-dark hover:bg-brand-dark/90 active:transform active:scale-95 text-brand-snow font-bold rounded-xl shadow-lg transition-all text-sm md:text-base">
                     <i class="fa-solid fa-circle-plus text-lg text-brand-light"></i>
                     Buat Permintaan Baru

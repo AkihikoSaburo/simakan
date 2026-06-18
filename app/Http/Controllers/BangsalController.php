@@ -19,6 +19,11 @@ class BangsalController extends Controller
         return view('bangsal.dashboard', compact('orders'));
     }
 
+    public function create()
+    {
+        return view('bangsal.form-input');
+    }
+
     public function show(Order $order)
     {
         // Pastikan hanya boleh melihat order milik bangsal sendiri

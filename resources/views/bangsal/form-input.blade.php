@@ -28,54 +28,6 @@
     <main class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
         
         <form action="action/simpan_permintaan.php" method="POST" class="space-y-6">
-            
-            <div class="bg-brand-snow rounded-2xl border border-brand-light p-6 shadow-sm grid grid-cols-1 md:grid-cols-3 gap-6">
-                
-                <div class="space-y-2">
-                    <label class="block text-sm font-bold text-brand-dark">Tanggal Pemberian Makanan</label>
-                    <div class="relative">
-                        <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-brand-gray pointer-events-none">
-                            <i class="fa-solid fa-calendar-day"></i>
-                        </span>
-                        <input type="date" name="tanggal_pemberian" required
-                            class="w-full bg-brand-snow border border-brand-light text-brand-dark rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary transition-all">
-                    </div>
-                </div>
-
-                <div class="space-y-2">
-                    <label class="block text-sm font-bold text-brand-dark">Shift Waktu Makan</label>
-                    <div class="grid grid-cols-3 gap-2">
-                        <label class="cursor-pointer border border-brand-light rounded-xl p-3 flex flex-col items-center justify-center text-center bg-brand-snow hover:bg-brand-light/20 transition-all text-brand-dark has-[:checked]:border-brand-primary has-[:checked]:bg-brand-light/40 has-[:checked]:text-brand-primary">
-                            <input type="radio" name="waktu_makan" value="Pagi" required class="sr-only">
-                            <i class="fa-solid fa-cloud-sun text-lg mb-1"></i>
-                            <span class="text-xs font-bold">Pagi</span>
-                        </label>
-                        <label class="cursor-pointer border border-brand-light rounded-xl p-3 flex flex-col items-center justify-center text-center bg-brand-snow hover:bg-brand-light/20 transition-all text-brand-dark has-[:checked]:border-brand-primary has-[:checked]:bg-brand-light/40 has-[:checked]:text-brand-primary">
-                            <input type="radio" name="waktu_makan" value="Siang" class="sr-only">
-                            <i class="fa-solid fa-sun text-lg mb-1"></i>
-                            <span class="text-xs font-bold">Siang</span>
-                        </label>
-                        <label class="cursor-pointer border border-brand-light rounded-xl p-3 flex flex-col items-center justify-center text-center bg-brand-snow hover:bg-brand-light/20 transition-all text-brand-dark has-[:checked]:border-brand-primary has-[:checked]:bg-brand-light/40 has-[:checked]:text-brand-primary">
-                            <input type="radio" name="waktu_makan" value="Malam" class="sr-only">
-                            <i class="fa-solid fa-moon text-lg mb-1"></i>
-                            <span class="text-xs font-bold">Malam</span>
-                        </label>
-                    </div>
-                </div>
-
-                <div class="space-y-2">
-                    <label class="block text-sm font-bold text-brand-dark">Sub Ruangan / Kamar</label>
-                    <div class="relative">
-                        <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-brand-gray pointer-events-none">
-                            <i class="fa-solid fa-door-open"></i>
-                        </span>
-                        <input type="text" name="sub_ruangan" placeholder="Contoh: Palem 1 - 3, Isolasi" required
-                            class="w-full bg-brand-snow border border-brand-light text-brand-dark placeholder-brand-gray rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary transition-all">
-                    </div>
-                    <span class="text-[11px] text-brand-gray block">Pisahkan dengan koma jika mencakup beberapa sub ruangan.</span>
-                </div>
-
-            </div>
 
             <div class="bg-brand-snow rounded-2xl border border-brand-light shadow-sm overflow-hidden">
                 <div class="p-5 border-b border-brand-light flex items-center justify-between bg-brand-light/10">
@@ -118,14 +70,29 @@
                                     <input type="text" name="kamar_kelas[]" required placeholder="Kmr 3 / Klst II" 
                                         class="w-full bg-brand-snow border border-brand-light text-brand-dark rounded-lg p-2 text-xs focus:outline-none focus:ring-2 focus:ring-brand-primary">
                                 </td>
-                                <td class="py-3 px-3">
-                                    <select name="bentuk_makanan[]" required 
-                                        class="w-full bg-brand-snow border border-brand-light text-brand-dark rounded-lg p-2 text-xs focus:outline-none focus:ring-2 focus:ring-brand-primary">
-                                        <option value="Biasa">Biasa</option>
-                                        <option value="Lunak">Lunak (Bubur Kasar)</option>
-                                        <option value="Saring">Saring (Bubur Saring)</option>
-                                        <option value="Cair">Cair</option>
-                                    </select>
+                                <td class="py-3 px-3 relative wrapper-bentuk-makanan">
+                                    <button type="button" 
+                                        class="btn-dropdown w-full bg-brand-snow border border-brand-light text-brand-dark rounded-lg p-2 text-xs focus:outline-none focus:ring-2 focus:ring-brand-primary flex items-center justify-between">
+                                        <span class="label-dropdown truncate text-brand-gray pointer-events-none">Pilih Bentuk Makanan</span>
+                                        <i class="fa-solid fa-chevron-down text-[10px] text-brand-gray ml-1 pointer-events-none"></i>
+                                    </button>
+                                    <div class="menu-dropdown hidden fixed bg-white border border-brand-light rounded-xl shadow-lg z-50 max-h-48 overflow-y-auto p-2 space-y-1">
+                                        <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-brand-light/40 rounded-lg cursor-pointer text-xs font-medium text-brand-dark">
+                                            <input type="checkbox" name="bentuk_makanan[][]" value="Nasi" class="rounded border-brand-light text-brand-primary focus:ring-brand-primary"> Nasi
+                                        </label>
+                                        <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-brand-light/40 rounded-lg cursor-pointer text-xs font-medium text-brand-dark">
+                                            <input type="checkbox" name="bentuk_makanan[][]" value="Bubur" class="rounded border-brand-light text-brand-primary focus:ring-brand-primary"> Bubur
+                                        </label>
+                                        <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-brand-light/40 rounded-lg cursor-pointer text-xs font-medium text-brand-dark">
+                                            <input type="checkbox" name="bentuk_makanan[][]" value="Msk. Cair / Susu" class="rounded border-brand-light text-brand-primary focus:ring-brand-primary"> Msk. Cair / Susu
+                                        </label>
+                                        <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-brand-light/40 rounded-lg cursor-pointer text-xs font-medium text-brand-dark">
+                                            <input type="checkbox" name="bentuk_makanan[][]" value="Bubur Saring" class="rounded border-brand-light text-brand-primary focus:ring-brand-primary"> Bubur Saring
+                                        </label>
+                                        <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-brand-light/40 rounded-lg cursor-pointer text-xs font-medium text-brand-dark">
+                                            <input type="checkbox" name="bentuk_makanan[][]" value="Sonde" class="rounded border-brand-light text-brand-primary focus:ring-brand-primary"> Sonde
+                                        </label>
+                                    </div>
                                 </td>
                                 <td class="py-3 px-3">
                                     <input type="text" name="diet[]" placeholder="Contoh: RG (Rendah Garam), DM" 
@@ -158,66 +125,5 @@
 
         </form>
     </main>
-
-    <script>
-        function tambahBarisPasien() {
-            const tbody = document.querySelector('#tabelPasien tbody');
-            const totalBaris = tbody.querySelectorAll('.row-pasien').length;
-            const nomorBaru = totalBaris + 1;
-
-            const barisBaruHTML = `
-                <tr class="hover:bg-brand-light/5 transition-colors row-pasien">
-                    <td class="py-3 px-4 text-center font-bold text-brand-gray index-nomor">${nomorBaru}</td>
-                    <td class="py-3 px-3">
-                        <input type="text" name="nama_pasien[]" required placeholder="Nama Lengkap" 
-                            class="w-full bg-brand-snow border border-brand-light text-brand-dark rounded-lg p-2 text-xs focus:outline-none focus:ring-2 focus:ring-brand-primary">
-                    </td>
-                    <td class="py-3 px-3">
-                        <input type="text" name="no_rm[]" required placeholder="00-00-00" 
-                            class="w-full bg-brand-snow border border-brand-light font-mono text-brand-dark rounded-lg p-2 text-xs focus:outline-none focus:ring-2 focus:ring-brand-primary">
-                    </td>
-                    <td class="py-3 px-3">
-                        <input type="text" name="kamar_kelas[]" required placeholder="Kmr 3 / Klst II" 
-                            class="w-full bg-brand-snow border border-brand-light text-brand-dark rounded-lg p-2 text-xs focus:outline-none focus:ring-2 focus:ring-brand-primary">
-                    </td>
-                    <td class="py-3 px-3">
-                        <select name="bentuk_makanan[]" required 
-                            class="w-full bg-brand-snow border border-brand-light text-brand-dark rounded-lg p-2 text-xs focus:outline-none focus:ring-2 focus:ring-brand-primary">
-                            <option value="Biasa">Biasa</option>
-                            <option value="Lunak">Lunak (Bubur Kasar)</option>
-                            <option value="Saring">Saring (Bubur Saring)</option>
-                            <option value="Cair">Cair</option>
-                        </select>
-                    </td>
-                    <td class="py-3 px-3">
-                        <input type="text" name="diet[]" placeholder="Contoh: RG (Rendah Garam), DM" 
-                            class="w-full bg-brand-snow border border-brand-light text-brand-dark rounded-lg p-2 text-xs focus:outline-none focus:ring-2 focus:ring-brand-primary">
-                    </td>
-                    <td class="py-3 px-3">
-                        <input type="text" name="keterangan[]" placeholder="Contoh: Tanpa Telur, Alergi" 
-                            class="w-full bg-brand-snow border border-brand-light text-brand-dark rounded-lg p-2 text-xs focus:outline-none focus:ring-2 focus:ring-brand-primary">
-                    </td>
-                    <td class="py-3 px-4 text-center">
-                        <button type="button" onclick="hapusBarisPasien(this)" class="text-rose-500 hover:text-rose-700 transition-colors text-sm">
-                            <i class="fa-solid fa-trash-can"></i>
-                        </button>
-                    </td>
-                </tr>
-            `;
-
-            tbody.insertAdjacentHTML('beforeend', barisBaruHTML);
-        }
-
-        function hapusBarisPasien(button) {
-            const baris = button.closest('.row-pasien');
-            baris.remove();
-            
-            const semuaNomor = document.querySelectorAll('.index-nomor');
-            semuaNomor.forEach((td, index) => {
-                td.textContent = index + 1;
-            });
-        }
-    </script>
-
 </body>
 </html>

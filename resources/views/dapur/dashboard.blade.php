@@ -1,9 +1,10 @@
 @php
-use Illuminate\Support\Str;
+    use Illuminate\Support\Str;
 @endphp
 
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,7 +16,8 @@ use Illuminate\Support\Str;
 <body class="bg-brand-snow font-sans text-brand-dark antialiased min-h-screen flex flex-col">
 
     {{-- NAVBAR --}}
-    <nav class="sticky top-0 z-50 bg-brand-snow border-b border-brand-light px-6 py-4 flex items-center justify-between shadow-sm">
+    <nav
+        class="sticky top-0 z-50 bg-brand-snow border-b border-brand-light px-6 py-4 flex items-center justify-between shadow-sm">
 
         <div>
             <span class="text-xs font-bold uppercase tracking-wider text-brand-primary block">
@@ -30,22 +32,22 @@ use Illuminate\Support\Str;
         <div class="flex items-center space-x-4">
 
             <div class="text-right hidden md:block">
-                <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-brand-light text-brand-primary border border-brand-primary/20">
+                <span
+                    class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-brand-light text-brand-primary border border-brand-primary/20">
                     <span class="h-1.5 w-1.5 rounded-full bg-brand-primary"></span>
                     Dapur {{ Str::title(auth()->user()->username) }}
                 </span>
             </div>
 
-            <div class="h-10 w-10 rounded-xl bg-brand-snow border border-brand-light flex items-center justify-center text-brand-gray shadow-inner">
+            <div
+                class="h-10 w-10 rounded-xl bg-brand-snow border border-brand-light flex items-center justify-center text-brand-gray shadow-inner">
                 <i class="fa-solid fa-utensils text-lg"></i>
             </div>
 
             <form method="POST" action="{{ route('logout') }}" class="inline">
                 @csrf
 
-                <button
-                    type="submit"
-                    class="text-brand-gray hover:text-rose-600 p-2 rounded-lg transition-colors"
+                <button type="submit" class="text-brand-gray hover:text-rose-600 p-2 rounded-lg transition-colors"
                     title="Keluar">
                     <i class="fa-solid fa-right-from-bracket text-lg"></i>
                 </button>
@@ -58,7 +60,8 @@ use Illuminate\Support\Str;
     <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
 
         {{-- HERO --}}
-        <div class="bg-gradient-to-r from-brand-primary to-brand-accent rounded-2xl p-6 md:p-8 shadow-xl shadow-brand-light text-brand-snow">
+        <div
+            class="bg-gradient-to-r from-brand-primary to-brand-accent rounded-2xl p-6 md:p-8 shadow-xl shadow-brand-light text-brand-snow">
 
             <h2 class="text-2xl md:text-3xl font-black tracking-tight">
                 Monitoring Permintaan Makanan 🍽️
@@ -70,7 +73,7 @@ use Illuminate\Support\Str;
 
             <div class="mt-4">
                 <a href="{{ route('dapur.history') }}"
-                   class="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-brand-dark hover:bg-brand-dark/90 transition-all font-bold text-sm">
+                    class="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-brand-dark hover:bg-brand-dark/90 transition-all font-bold text-sm">
                     <i class="fa-solid fa-clock-rotate-left"></i>
                     Riwayat Permintaan
                 </a>
@@ -79,11 +82,11 @@ use Illuminate\Support\Str;
         </div>
 
         {{-- STATISTIK --}}
-        <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-4">
 
             <div class="bg-white border border-brand-light rounded-xl p-5 shadow-sm">
                 <p class="text-xs uppercase font-bold text-brand-gray">
-                    Pengiriman Hari Ini
+                    Total Nasi
                 </p>
 
                 <h3 class="mt-2 text-3xl font-black text-brand-primary">
@@ -93,7 +96,7 @@ use Illuminate\Support\Str;
 
             <div class="bg-white border border-brand-light rounded-xl p-5 shadow-sm">
                 <p class="text-xs uppercase font-bold text-brand-gray">
-                    Bangsal Mengirim
+                    Total Bubur
                 </p>
 
                 <h3 class="mt-2 text-3xl font-black text-brand-primary">
@@ -103,7 +106,17 @@ use Illuminate\Support\Str;
 
             <div class="bg-white border border-brand-light rounded-xl p-5 shadow-sm">
                 <p class="text-xs uppercase font-bold text-brand-gray">
-                    Total Pasien
+                    Total Makanan Cair
+                </p>
+
+                <h3 class="mt-2 text-3xl font-black text-brand-primary">
+                    {{ $orders->sum(fn($order) => $order->orderDetails->count()) }}
+                </h3>
+            </div>
+
+            <div class="bg-white border border-brand-light rounded-xl p-5 shadow-sm">
+                <p class="text-xs uppercase font-bold text-brand-gray">
+                    Total Sonde
                 </p>
 
                 <h3 class="mt-2 text-3xl font-black text-brand-primary">
@@ -211,7 +224,7 @@ use Illuminate\Support\Str;
                         <div class="mt-6">
 
                             <a href="{{ route('dapur.orders.show', $order) }}"
-                               class="w-full inline-flex justify-center items-center gap-2 px-4 py-3 rounded-xl bg-brand-primary text-brand-snow font-semibold hover:bg-brand-primary/90 transition-all">
+                                class="w-full inline-flex justify-center items-center gap-2 px-4 py-3 rounded-xl bg-brand-primary text-brand-snow font-semibold hover:bg-brand-primary/90 transition-all">
 
                                 <i class="fa-solid fa-eye"></i>
                                 Lihat Detail
@@ -235,4 +248,5 @@ use Illuminate\Support\Str;
     </footer>
 
 </body>
+
 </html>
