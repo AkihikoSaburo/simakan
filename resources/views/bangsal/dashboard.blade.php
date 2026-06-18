@@ -14,37 +14,13 @@
 
 <body class="bg-brand-snow font-sans text-brand-dark antialiased min-h-screen flex flex-col">
 
-    <nav
-        class="sticky top-0 z-50 bg-brand-snow border-b border-brand-light px-6 py-4 flex items-center justify-between shadow-sm">
-        <div class="flex items-center space-x-3">
-            <div>
-                <span class="text-xs font-bold uppercase tracking-wider text-brand-primary block">SIMAKAN RSUD</span>
-                <h1 class="text-lg font-extrabold text-brand-dark tracking-tight -mt-1">Digitalisasi Form Makanan</h1>
-            </div>
-        </div>
-
-        <div class="flex items-center space-x-4">
-            <div class="text-right hidden md:block">
-                <span
-                    class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-brand-light text-brand-primary border border-brand-primary/20">
-                    <span class="h-1.5 w-1.5 rounded-full bg-brand-primary"></span>
-                    Bangsal {{ Str::title(auth()->user()->username) }}
-                </span>
-            </div>
-            <div
-                class="h-10 w-10 rounded-xl bg-brand-snow border border-brand-light flex items-center justify-center text-brand-gray shadow-inner">
-                <i class="fa-solid fa-user-nurse text-lg"></i>
-            </div>
-            <form method="POST" action="{{ route('logout') }}" class="inline">
-                @csrf
-                <button type="submit" class="text-brand-gray hover:text-rose-600 p-2 rounded-lg transition-colors"
-                    title="Keluar">
-                    <i class="fa-solid fa-right-from-bracket text-lg"></i>
-                </button>
-            </form>
-        </div>
-    </nav>
-
+    <x-navbar 
+    title="Digitalisasi Form Makanan" 
+    role="Bangsal" 
+    :username="auth()->user()->username" 
+    icon="fa-user-nurse" 
+    />
+    
     <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
 
         <div

@@ -21,3 +21,23 @@
     --color-brand-gray: #757575;
     --color-brand-slate: #475569;
 }
+
+@utility form-input {
+    @apply w-full bg-brand-snow border border-brand-light text-brand-dark rounded-lg p-2 text-xs focus:outline-none focus:ring-2 focus:ring-brand-primary transition duration-200;
+}
+
+@utility btn-primary {
+    @apply inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-brand-primary hover:bg-brand-primary/95 active:scale-95 text-brand-snow font-bold rounded-xl shadow-md transition-all duration-200 cursor-pointer;
+}
+
+@utility btn-secondary {
+    @apply px-6 py-3 border border-brand-light text-brand-slate font-bold rounded-xl hover:bg-brand-light/30 transition-colors text-sm cursor-pointer;
+}
+
+@utility badge-brand {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-brand-light text-brand-primary border border-brand-primary/20;
+}
+
+@utility form-checkbox-brand {
+    @apply rounded border-brand-light text-brand-primary focus:ring-brand-primary;
+}

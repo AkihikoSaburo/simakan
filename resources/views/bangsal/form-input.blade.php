@@ -8,22 +8,12 @@
 </head>
 <body class="bg-brand-snow font-sans text-brand-dark antialiased">
 
-    <nav class="sticky top-0 z-50 bg-brand-snow border-b border-brand-light px-6 py-4 flex items-center justify-between shadow-sm">
-        <div class="flex items-center space-x-3">
-            <a href="dashboard-bangsal.php" class="text-brand-gray hover:text-brand-primary p-2 rounded-lg transition-colors" title="Kembali ke Dashboard">
-                <i class="fa-solid fa-arrow-left text-lg"></i>
-            </a>
-            <div>
-                <span class="text-xs font-bold uppercase tracking-wider text-brand-primary block">SIMAKAN RSUD</span>
-                <h1 class="text-lg font-extrabold text-brand-dark tracking-tight -mt-1">Form Permintaan Makanan</h1>
-            </div>
-        </div>
-        
-        <div class="flex items-center space-x-3 bg-brand-light/40 px-4 py-2 rounded-xl border border-brand-light">
-            <i class="fa-solid fa-hospital-user text-brand-primary"></i>
-            <span class="text-sm font-bold text-brand-dark">Ruang Palem</span>
-        </div>
-    </nav>
+    <x-navbar 
+    title="Digitalisasi Form Makanan" 
+    role="Bangsal" 
+    :username="auth()->user()->username" 
+    icon="fa-user-nurse" 
+    />
 
     <main class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
         
@@ -60,47 +50,47 @@
                                 <td class="py-3 px-4 text-center font-bold text-brand-gray index-nomor">1</td>
                                 <td class="py-3 px-3">
                                     <input type="text" name="nama_pasien[]" required placeholder="Nama Lengkap" 
-                                        class="w-full bg-brand-snow border border-brand-light text-brand-dark rounded-lg p-2 text-xs focus:outline-none focus:ring-2 focus:ring-brand-primary">
+                                        class="form-input">
                                 </td>
                                 <td class="py-3 px-3">
                                     <input type="text" name="no_rm[]" required placeholder="00-00-00" 
-                                        class="w-full bg-brand-snow border border-brand-light font-mono text-brand-dark rounded-lg p-2 text-xs focus:outline-none focus:ring-2 focus:ring-brand-primary">
+                                        class="form-input font-mono">
                                 </td>
                                 <td class="py-3 px-3">
                                     <input type="text" name="kamar_kelas[]" required placeholder="Kmr 3 / Klst II" 
-                                        class="w-full bg-brand-snow border border-brand-light text-brand-dark rounded-lg p-2 text-xs focus:outline-none focus:ring-2 focus:ring-brand-primary">
+                                        class="form-input">
                                 </td>
                                 <td class="py-3 px-3 relative wrapper-bentuk-makanan">
                                     <button type="button" 
-                                        class="btn-dropdown w-full bg-brand-snow border border-brand-light text-brand-dark rounded-lg p-2 text-xs focus:outline-none focus:ring-2 focus:ring-brand-primary flex items-center justify-between">
+                                        class="btn-dropdown form-input flex items-center justify-between">
                                         <span class="label-dropdown truncate text-brand-gray pointer-events-none">Pilih Bentuk Makanan</span>
                                         <i class="fa-solid fa-chevron-down text-[10px] text-brand-gray ml-1 pointer-events-none"></i>
                                     </button>
                                     <div class="menu-dropdown hidden fixed bg-white border border-brand-light rounded-xl shadow-lg z-50 max-h-48 overflow-y-auto p-2 space-y-1">
                                         <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-brand-light/40 rounded-lg cursor-pointer text-xs font-medium text-brand-dark">
-                                            <input type="checkbox" name="bentuk_makanan[][]" value="Nasi" class="rounded border-brand-light text-brand-primary focus:ring-brand-primary"> Nasi
+                                            <input type="checkbox" name="bentuk_makanan[][]" value="Nasi" class="form-checkbox-brand"> Nasi
                                         </label>
                                         <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-brand-light/40 rounded-lg cursor-pointer text-xs font-medium text-brand-dark">
-                                            <input type="checkbox" name="bentuk_makanan[][]" value="Bubur" class="rounded border-brand-light text-brand-primary focus:ring-brand-primary"> Bubur
+                                            <input type="checkbox" name="bentuk_makanan[][]" value="Bubur" class="form-checkbox-brand"> Bubur
                                         </label>
                                         <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-brand-light/40 rounded-lg cursor-pointer text-xs font-medium text-brand-dark">
-                                            <input type="checkbox" name="bentuk_makanan[][]" value="Msk. Cair / Susu" class="rounded border-brand-light text-brand-primary focus:ring-brand-primary"> Msk. Cair / Susu
+                                            <input type="checkbox" name="bentuk_makanan[][]" value="Msk. Cair / Susu" class="form-checkbox-brand"> Msk. Cair / Susu
                                         </label>
                                         <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-brand-light/40 rounded-lg cursor-pointer text-xs font-medium text-brand-dark">
-                                            <input type="checkbox" name="bentuk_makanan[][]" value="Bubur Saring" class="rounded border-brand-light text-brand-primary focus:ring-brand-primary"> Bubur Saring
+                                            <input type="checkbox" name="bentuk_makanan[][]" value="Bubur Saring" class="form-checkbox-brand"> Bubur Saring
                                         </label>
                                         <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-brand-light/40 rounded-lg cursor-pointer text-xs font-medium text-brand-dark">
-                                            <input type="checkbox" name="bentuk_makanan[][]" value="Sonde" class="rounded border-brand-light text-brand-primary focus:ring-brand-primary"> Sonde
+                                            <input type="checkbox" name="bentuk_makanan[][]" value="Sonde" class="form-checkbox-brand"> Sonde
                                         </label>
                                     </div>
                                 </td>
                                 <td class="py-3 px-3">
                                     <input type="text" name="diet[]" placeholder="Contoh: RG (Rendah Garam), DM" 
-                                        class="w-full bg-brand-snow border border-brand-light text-brand-dark rounded-lg p-2 text-xs focus:outline-none focus:ring-2 focus:ring-brand-primary">
+                                        class="form-input">
                                 </td>
                                 <td class="py-3 px-3">
                                     <input type="text" name="keterangan[]" placeholder="Contoh: Tanpa Telur, Alergi" 
-                                        class="w-full bg-brand-snow border border-brand-light text-brand-dark rounded-lg p-2 text-xs focus:outline-none focus:ring-2 focus:ring-brand-primary">
+                                        class="form-input">
                                 </td>
                                 <td class="py-3 px-4 text-center">
                                     <button type="button" disabled class="text-brand-gray/40 cursor-not-allowed text-sm">

@@ -15,51 +15,15 @@
 
 <body class="bg-brand-snow font-sans text-brand-dark antialiased min-h-screen flex flex-col">
 
-    {{-- NAVBAR --}}
-    <nav
-        class="sticky top-0 z-50 bg-brand-snow border-b border-brand-light px-6 py-4 flex items-center justify-between shadow-sm">
+    <x-navbar 
+    title="Dashboard Dapur" 
+    role="Dapur" 
+    :username="auth()->user()->username" 
+    icon="fa-utensils" 
+    />
 
-        <div>
-            <span class="text-xs font-bold uppercase tracking-wider text-brand-primary block">
-                SIMAKAN RSUD
-            </span>
-
-            <h1 class="text-lg font-extrabold text-brand-dark tracking-tight -mt-1">
-                Dashboard Dapur
-            </h1>
-        </div>
-
-        <div class="flex items-center space-x-4">
-
-            <div class="text-right hidden md:block">
-                <span
-                    class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-brand-light text-brand-primary border border-brand-primary/20">
-                    <span class="h-1.5 w-1.5 rounded-full bg-brand-primary"></span>
-                    Dapur {{ Str::title(auth()->user()->username) }}
-                </span>
-            </div>
-
-            <div
-                class="h-10 w-10 rounded-xl bg-brand-snow border border-brand-light flex items-center justify-center text-brand-gray shadow-inner">
-                <i class="fa-solid fa-utensils text-lg"></i>
-            </div>
-
-            <form method="POST" action="{{ route('logout') }}" class="inline">
-                @csrf
-
-                <button type="submit" class="text-brand-gray hover:text-rose-600 p-2 rounded-lg transition-colors"
-                    title="Keluar">
-                    <i class="fa-solid fa-right-from-bracket text-lg"></i>
-                </button>
-            </form>
-
-        </div>
-    </nav>
-
-    {{-- CONTENT --}}
     <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
 
-        {{-- HERO --}}
         <div
             class="bg-gradient-to-r from-brand-primary to-brand-accent rounded-2xl p-6 md:p-8 shadow-xl shadow-brand-light text-brand-snow">
 
@@ -81,8 +45,7 @@
 
         </div>
 
-        {{-- STATISTIK --}}
-        <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
 
             <div class="bg-white border border-brand-light rounded-xl p-5 shadow-sm">
                 <p class="text-xs uppercase font-bold text-brand-gray">
@@ -136,7 +99,6 @@
 
         </div>
 
-        {{-- EMPTY STATE --}}
         @if($orders->isEmpty())
 
             <div class="bg-white border border-brand-light rounded-2xl p-12 text-center shadow-sm">
@@ -158,7 +120,6 @@
 
         @else
 
-            {{-- CARD ORDER --}}
             <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
 
                 @foreach($orders as $order)
@@ -200,22 +161,22 @@
                             </div>
 
                             <div class="flex justify-between">
-                                <span>🍚 Nasi</span>
+                                <span>Nasi</span>
                                 <strong>{{ $nasi }}</strong>
                             </div>
 
                             <div class="flex justify-between">
-                                <span>🥣 Bubur</span>
+                                <span>Bubur</span>
                                 <strong>{{ $bubur }}</strong>
                             </div>
 
                             <div class="flex justify-between">
-                                <span>🧃 Makanan Cair</span>
+                                <span>Makanan Cair</span>
                                 <strong>{{ $cair }}</strong>
                             </div>
 
                             <div class="flex justify-between">
-                                <span>🩺 Sonde</span>
+                                <span>Sonde</span>
                                 <strong>{{ $sonde }}</strong>
                             </div>
 
