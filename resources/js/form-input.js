@@ -104,19 +104,19 @@ window.tambahBarisPasien = function() {
                 </button>
                 <div class="menu-dropdown hidden fixed bg-white border border-brand-light rounded-xl shadow-lg z-50 max-h-48 overflow-y-auto p-2 space-y-1">
                     <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-brand-light/40 rounded-lg cursor-pointer text-xs font-medium text-brand-dark">
-                        <input type="checkbox" name="bentuk_makanan[][]" value="Nasi" class="form-checkbox-brand"> Nasi
+                        <input type="checkbox" name="bentuk_makanan[${nomorBaru - 1}][]" value="Nasi" class="form-checkbox-brand"> Nasi
                     </label>
                     <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-brand-light/40 rounded-lg cursor-pointer text-xs font-medium text-brand-dark">
-                        <input type="checkbox" name="bentuk_makanan[][]" value="Bubur" class="form-checkbox-brand"> Bubur
+                        <input type="checkbox" name="bentuk_makanan[${nomorBaru - 1}][]" value="Bubur" class="form-checkbox-brand"> Bubur
                     </label>
                     <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-brand-light/40 rounded-lg cursor-pointer text-xs font-medium text-brand-dark">
-                        <input type="checkbox" name="bentuk_makanan[][]" value="Msk. Cair / Susu" class="form-checkbox-brand"> Msk. Cair / Susu
+                        <input type="checkbox" name="bentuk_makanan[${nomorBaru - 1}][]" value="Msk. Cair / Susu" class="form-checkbox-brand"> Msk. Cair / Susu
                     </label>
                     <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-brand-light/40 rounded-lg cursor-pointer text-xs font-medium text-brand-dark">
-                        <input type="checkbox" name="bentuk_makanan[][]" value="Bubur Saring" class="form-checkbox-brand"> Bubur Saring
+                        <input type="checkbox" name="bentuk_makanan[${nomorBaru - 1}][]" value="Bubur Saring" class="form-checkbox-brand"> Bubur Saring
                     </label>
                     <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-brand-light/40 rounded-lg cursor-pointer text-xs font-medium text-brand-dark">
-                        <input type="checkbox" name="bentuk_makanan[][]" value="Sonde" class="form-checkbox-brand"> Sonde
+                        <input type="checkbox" name="bentuk_makanan[${nomorBaru - 1}][]" value="Sonde" class="form-checkbox-brand"> Sonde
                     </label>
                 </div>
             </td>

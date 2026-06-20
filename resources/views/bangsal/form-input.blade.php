@@ -16,9 +16,8 @@
     />
 
     <main class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
-        
-        <form action="action/simpan_permintaan.php" method="POST" class="space-y-6">
-
+        <form action="{{ route('bangsal.orders.store') }}" method="POST" class="space-y-6">
+            @csrf
             <div class="bg-brand-snow rounded-2xl border border-brand-light shadow-sm overflow-hidden">
                 <div class="p-5 border-b border-brand-light flex items-center justify-between bg-brand-light/10">
                     <div>
@@ -68,19 +67,19 @@
                                     </button>
                                     <div class="menu-dropdown hidden fixed bg-white border border-brand-light rounded-xl shadow-lg z-50 max-h-48 overflow-y-auto p-2 space-y-1">
                                         <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-brand-light/40 rounded-lg cursor-pointer text-xs font-medium text-brand-dark">
-                                            <input type="checkbox" name="bentuk_makanan[][]" value="Nasi" class="form-checkbox-brand"> Nasi
+                                            <input type="checkbox" name="bentuk_makanan[0][]" value="Nasi" class="form-checkbox-brand"> Nasi
                                         </label>
                                         <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-brand-light/40 rounded-lg cursor-pointer text-xs font-medium text-brand-dark">
-                                            <input type="checkbox" name="bentuk_makanan[][]" value="Bubur" class="form-checkbox-brand"> Bubur
+                                            <input type="checkbox" name="bentuk_makanan[0][]" value="Bubur" class="form-checkbox-brand"> Bubur
                                         </label>
                                         <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-brand-light/40 rounded-lg cursor-pointer text-xs font-medium text-brand-dark">
-                                            <input type="checkbox" name="bentuk_makanan[][]" value="Msk. Cair / Susu" class="form-checkbox-brand"> Msk. Cair / Susu
+                                            <input type="checkbox" name="bentuk_makanan[0][]" value="Msk. Cair / Susu" class="form-checkbox-brand"> Msk. Cair / Susu
                                         </label>
                                         <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-brand-light/40 rounded-lg cursor-pointer text-xs font-medium text-brand-dark">
-                                            <input type="checkbox" name="bentuk_makanan[][]" value="Bubur Saring" class="form-checkbox-brand"> Bubur Saring
+                                            <input type="checkbox" name="bentuk_makanan[0][]" value="Bubur Saring" class="form-checkbox-brand"> Bubur Saring
                                         </label>
                                         <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-brand-light/40 rounded-lg cursor-pointer text-xs font-medium text-brand-dark">
-                                            <input type="checkbox" name="bentuk_makanan[][]" value="Sonde" class="form-checkbox-brand"> Sonde
+                                            <input type="checkbox" name="bentuk_makanan[0][]" value="Sonde" class="form-checkbox-brand"> Sonde
                                         </label>
                                     </div>
                                 </td>
@@ -105,7 +104,7 @@
             </div>
 
             <div class="flex items-center justify-end space-x-4">
-                <a href="dashboard-bangsal.php" class="px-6 py-3 border border-brand-light text-brand-slate font-bold rounded-xl hover:bg-brand-light/30 transition-colors text-sm">
+                <a href="{{ route('bangsal.dashboard') }}" class="px-6 py-3 border border-brand-light text-brand-slate font-bold rounded-xl hover:bg-brand-light/30 transition-colors text-sm">
                     Batal
                 </a>
                 <button type="submit" class="px-7 py-3 bg-brand-primary hover:bg-brand-primary/95 text-brand-snow font-bold rounded-xl shadow-lg shadow-brand-light transition-all active:transform active:scale-95 text-sm">
