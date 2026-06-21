@@ -30,31 +30,6 @@
             :button-icon="'fa-solid fa-clock-rotate-left'"
         />
 
-        <x-layout.stats-grid
-            :stats="[
-               [
-                   'title' => 'Total Nasi',
-                   'value' => $orders->sum('nasi_count'),
-               ],
-               [
-                   'title' => 'Total Bubur',
-                   'value' => $orders->sum('bubur_count'),
-               ],
-               [
-                   'title' => 'Total Masakan Cair / Susu',
-                   'value' => $orders->sum('makanan_cair_count'),
-               ],
-               [
-                    'title' => 'Total Bubur Saring',
-                    'value' => $orders->sum('bs_count'),
-                ],
-               [
-                   'title' => 'Total Sonde',
-                   'value' => $orders->sum('sonde_count'),
-               ],
-           ]"
-        />
-
         <x-dapur.order-monitoring :orders="$orders" />
 
     </main>

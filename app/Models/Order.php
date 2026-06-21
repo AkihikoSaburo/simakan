@@ -36,6 +36,31 @@ class Order extends Model
         return $this->hasMany(OrderDetail::class);
     }
 
+    public function getNasiCountAttribute(): int
+    {
+        return $this->orderDetails->where('nasi', true)->count();
+    }
+
+    public function getBuburCountAttribute(): int
+    {
+        return $this->orderDetails->where('bubur', true)->count();
+    }
+
+    public function getMakananCairCountAttribute(): int
+    {
+        return $this->orderDetails->where('makanan_cair', true)->count();
+    }
+
+    public function getBsCountAttribute(): int
+    {
+        return $this->orderDetails->where('bs', true)->count();
+    }
+
+    public function getSondeCountAttribute(): int
+    {
+        return $this->orderDetails->where('sonde', true)->count();
+    }
+
     public function dashboard()
     {
         $orders = Order::with([
