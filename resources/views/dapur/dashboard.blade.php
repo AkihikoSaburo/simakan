@@ -15,89 +15,45 @@
 
 <body class="bg-brand-snow font-sans text-brand-dark antialiased min-h-screen flex flex-col">
 
-    <x-navbar 
+    <x-layout.navbar 
     title="Dashboard Dapur" 
-    role="Dapur" 
-    :username="auth()->user()->username" 
     icon="fa-utensils" 
     />
 
     <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
 
-        <div
-            class="bg-gradient-to-r from-brand-primary to-brand-accent rounded-2xl p-6 md:p-8 shadow-xl shadow-brand-light text-brand-snow">
+        <x-ui.welcome-card
+            title="Monitoring Permintaan Makanan 🍽️"
+            description="Pantau seluruh permintaan makanan pasien yang dikirim oleh bangsal hari ini."
+            :button-text="'Riwayat Permintaan'"
+            :button-route="route('dapur.history')"
+            :button-icon="'fa-solid fa-clock-rotate-left'"
+        />
 
-            <h2 class="text-2xl md:text-3xl font-black tracking-tight">
-                Monitoring Permintaan Makanan 🍽️
-            </h2>
-
-            <p class="mt-2 text-sm md:text-base text-brand-light/90">
-                Pantau seluruh permintaan makanan pasien yang dikirim oleh bangsal hari ini.
-            </p>
-
-            <div class="mt-4">
-                <a href="{{ route('dapur.history') }}"
-                    class="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-brand-dark hover:bg-brand-dark/90 transition-all font-bold text-sm">
-                    <i class="fa-solid fa-clock-rotate-left"></i>
-                    Riwayat Permintaan
-                </a>
-            </div>
-
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-
-            <div class="bg-white border border-brand-light rounded-xl p-5 shadow-sm">
-                <p class="text-xs uppercase font-bold text-brand-gray">
-                    Total Nasi
-                </p>
-
-                <h3 class="mt-2 text-3xl font-black text-brand-primary">
-                    {{ $orders->count() }}
-                </h3>
-            </div>
-
-            <div class="bg-white border border-brand-light rounded-xl p-5 shadow-sm">
-                <p class="text-xs uppercase font-bold text-brand-gray">
-                    Total Bubur
-                </p>
-
-                <h3 class="mt-2 text-3xl font-black text-brand-primary">
-                    {{ $orders->pluck('bangsal_id')->unique()->count() }}
-                </h3>
-            </div>
-
-            <div class="bg-white border border-brand-light rounded-xl p-5 shadow-sm">
-                <p class="text-xs uppercase font-bold text-brand-gray">
-                    Total Makanan Cair
-                </p>
-
-                <h3 class="mt-2 text-3xl font-black text-brand-primary">
-                    {{ $orders->sum(fn($order) => $order->orderDetails->count()) }}
-                </h3>
-            </div>
-
-            <div class="bg-white border border-brand-light rounded-xl p-5 shadow-sm">
-                <p class="text-xs uppercase font-bold text-brand-gray">
-                    Total Sonde
-                </p>
-
-                <h3 class="mt-2 text-3xl font-black text-brand-primary">
-                    {{ $orders->sum(fn($order) => $order->orderDetails->count()) }}
-                </h3>
-            </div>
-
-            <div class="bg-white border border-brand-light rounded-xl p-5 shadow-sm">
-                <p class="text-xs uppercase font-bold text-brand-gray">
-                    Tanggal
-                </p>
-
-                <h3 class="mt-2 text-lg font-bold text-brand-dark">
-                    {{ now()->format('d M Y') }}
-                </h3>
-            </div>
-
-        </div>
+        <x-layout.stats-grid
+            :stats="[
+               [
+                   'title' => 'Total Nasi',
+                   'value' => $orders->count(),
+               ],
+               [
+                   'title' => 'Total Bubur',
+                   'value' => $orders->pluck('bangsal_id')->unique()->count(),
+               ],
+               [
+                   'title' => 'Total Masakan Cair / Susu',
+                   'value' => $orders->sum(fn($order) => $order->orderDetails->count()),
+               ],
+               [
+                    'title' => 'Total Bubur Saring',
+                    'value' => $orders->sum(fn($order) => $order->orderDetails->count()),
+                ],
+               [
+                   'title' => 'Total Sonde',
+                   'value' => $orders->sum(fn($order) => $order->orderDetails->count()),
+               ],
+           ]"
+        />
 
         @if($orders->isEmpty())
 
@@ -130,6 +86,7 @@
                         $nasi = $details->where('nasi', true)->count();
                         $bubur = $details->where('bubur', true)->count();
                         $cair = $details->where('makanan_cair', true)->count();
+                        $bs = $details->where('bs', true)->count();
                         $sonde = $details->where('sonde', true)->count();
                     @endphp
 
@@ -171,8 +128,13 @@
                             </div>
 
                             <div class="flex justify-between">
-                                <span>Makanan Cair</span>
+                                <span>Masakan Cair / Susu</span>
                                 <strong>{{ $cair }}</strong>
+                            </div>
+
+                            <div class="flex justify-between">
+                                <span>Bubur Saring</span>
+                                <strong>{{ $bs }}</strong>
                             </div>
 
                             <div class="flex justify-between">
@@ -204,9 +166,7 @@
 
     </main>
 
-    <footer class="text-center py-6 text-xs text-brand-gray border-t border-brand-light">
-        &copy; 2026 RSUD Andi Makkasau. Sistem Berjalan pada Server Lokal Jaringan Internal.
-    </footer>
+    <x-layout.footer />
 
 </body>
 

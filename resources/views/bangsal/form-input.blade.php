@@ -6,16 +6,16 @@
     <title>Input Permintaan Makanan - SIMAKAN</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="bg-brand-snow font-sans text-brand-dark antialiased">
+<body class="bg-brand-snow font-sans text-brand-dark antialiased min-h-screen flex flex-col">
 
-    <x-navbar 
+    <x-layout.navbar 
     title="Digitalisasi Form Makanan" 
     role="Bangsal" 
     :username="auth()->user()->username" 
     icon="fa-user-nurse" 
     />
 
-    <main class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
         <form action="{{ route('bangsal.orders.store') }}" method="POST" class="space-y-6">
             @csrf
             <div class="bg-brand-snow rounded-2xl border border-brand-light shadow-sm overflow-hidden">
@@ -114,5 +114,8 @@
 
         </form>
     </main>
+
+    <x-layout.footer />
+    
 </body>
 </html>

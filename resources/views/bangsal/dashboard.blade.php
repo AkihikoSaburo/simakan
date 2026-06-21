@@ -14,31 +14,22 @@
 
 <body class="bg-brand-snow font-sans text-brand-dark antialiased min-h-screen flex flex-col">
 
-    <x-navbar 
+    <x-layout.navbar 
     title="Digitalisasi Form Makanan" 
     role="Bangsal" 
     :username="auth()->user()->username" 
     icon="fa-user-nurse" 
-    />
+    />  
     
     <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
 
-        <div
-            class="bg-gradient-to-r from-brand-primary to-brand-accent rounded-2xl p-6 md:p-8 shadow-xl shadow-brand-light text-brand-snow flex flex-col md:flex-row md:items-center justify-between gap-6">
-            <div class="space-y-2">
-                <h2 class="text-2xl font-black tracking-tight md:text-3xl">Selamat Datang di Portal Bangsal 👋</h2>
-                <p class="text-brand-light/90 text-sm md:text-base max-w-xl">
-                    Silakan input lembar permintaan makanan pasien Anda hari ini.
-                </p>
-            </div>
-            <div class="flex-shrink-0">
-                <a href="{{ route('bangsal.orders.create') }}"
-                    class="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-brand-dark hover:bg-brand-dark/90 active:transform active:scale-95 text-brand-snow font-bold rounded-xl shadow-lg transition-all text-sm md:text-base">
-                    <i class="fa-solid fa-circle-plus text-lg text-brand-light"></i>
-                    Buat Permintaan Baru
-                </a>
-            </div>
-        </div>
+        <x-ui.welcome-card
+            title="Selamat Datang di Portal Bangsal 👋"
+            description="Silakan input lembar permintaan makanan pasien Anda hari ini."
+            :button-text="'Buat Permintaan Baru'"
+            :button-route="route('bangsal.orders.create')"
+            :button-icon="'fa-solid fa-circle-plus'"
+        />
 
         <div class="bg-brand-snow rounded-xl border border-brand-light shadow-sm overflow-hidden">
             <div
@@ -145,9 +136,7 @@
         </div>
     </main>
 
-    <footer class="text-center py-6 text-xs text-brand-gray border-t border-brand-light mt-12">
-        &copy; 2026 RSUD Andi Makassau. Sistem Berjalan pada Server Lokal Jaringan Internal.
-    </footer>
+    <x-layout.footer />
 
 </body>
 
