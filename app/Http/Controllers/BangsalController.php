@@ -7,6 +7,8 @@ use App\Models\OrderDetail;
 use App\Models\Patient;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\View\View;
+use Illuminate\Http\RedirectResponse;
 
 class BangsalController extends Controller
 {
@@ -112,6 +114,88 @@ class BangsalController extends Controller
         ]);
 
         return view('bangsal.detail', compact('order'));
+    }
+
+    public function edit(Order $order): View
+    {
+        // Pastikan hanya boleh mengedit order milik bangsal sendiri
+        if ($order->bangsal_id !== auth()->user()->bangsal_id) {
+            abort(403);
+        }
+
+        $order->load([
+            'orderDetails.patient',
+        ]);
+
+        return view('bangsal.form-input', compact('order'));
+    }
+
+    public function update(Request $request, Order $order): RedirectResponse
+    {
+        // Pastikan hanya boleh mengupdate order milik bangsal sendiri
+        if ($order->bangsal_id !== auth()->user()->bangsal_id) {
+            abort(403);
+        }
+
+        $request->validate([
+            'pasiens' => 'required|array|min:1',
+            'pasiens.*.nama_pasien' => 'required|string',
+            'pasiens.*.no_rm' => 'required|string',
+            'pasiens.*.kamar_kelas' => 'required|string',
+            'pasiens.*.bentuk_makanan' => 'nullable|array',
+            'pasiens.*.diet' => 'nullable|string',
+            'pasiens.*.keterangan' => 'nullable|string',
+        ]);
+
+        $bangsalId = auth()->user()->bangsal_id;
+
+        DB::transaction(function () use ($request, $order, $bangsalId) {
+            // Hapus detail porsi makan lama
+            $order->orderDetails()->delete();
+
+            // Masukkan data array pasiens yang baru
+            foreach ($request->pasiens as $dataPasien) {
+                $nama = $dataPasien['nama_pasien'];
+                $noRm = $dataPasien['no_rm'];
+                $kamarKelas = $dataPasien['kamar_kelas'];
+
+                // Find or create patient
+                $patient = Patient::firstOrCreate(
+                    ['no_rm' => $noRm],
+                    [
+                        'bangsal_id' => $bangsalId,
+                        'nama' => $nama,
+                        'kamar' => $kamarKelas,
+                        'tanggal_lahir' => '2000-01-01', // Fallback
+                    ]
+                );
+
+                // Update bangsal, kamar, and nama if patient already exists but details changed
+                if ($patient->bangsal_id !== $bangsalId || $patient->kamar !== $kamarKelas || $patient->nama !== $nama) {
+                    $patient->update([
+                        'bangsal_id' => $bangsalId,
+                        'kamar' => $kamarKelas,
+                        'nama' => $nama,
+                    ]);
+                }
+
+                $bentukMakanan = $dataPasien['bentuk_makanan'] ?? [];
+
+                OrderDetail::create([
+                    'order_id' => $order->id,
+                    'patient_id' => $patient->id,
+                    'nasi' => in_array('Nasi', $bentukMakanan),
+                    'bubur' => in_array('Bubur', $bentukMakanan),
+                    'makanan_cair' => in_array('Msk. Cair / Susu', $bentukMakanan),
+                    'bs' => in_array('Bubur Saring', $bentukMakanan),
+                    'sonde' => in_array('Sonde', $bentukMakanan),
+                    'diet_pasien' => $dataPasien['diet'] ?? null,
+                    'keterangan' => $dataPasien['keterangan'] ?? null,
+                ]);
+            }
+        });
+
+        return redirect()->route('bangsal.dashboard')->with('success', 'Permintaan makanan berhasil diperbarui.');
     }
     public function cariPasien(Request $request)
     {

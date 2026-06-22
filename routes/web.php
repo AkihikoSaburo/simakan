@@ -33,6 +33,10 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/bangsal/orders/{order}', [BangsalController::class, 'show'])->name('bangsal.orders.show');
 
+    Route::get('/bangsal/orders/{order}/edit', [BangsalController::class, 'edit'])->name('bangsal.orders.edit');
+
+    Route::put('/bangsal/orders/{order}', [BangsalController::class, 'update'])->name('bangsal.orders.update');
+
     Route::get('/dapur/dashboard', [DapurController::class, 'dashboard'])->name('dapur.dashboard');
 
     Route::get('/dapur/orders/{order}', [DapurController::class, 'show'])->name('dapur.orders.show');

@@ -102,8 +102,8 @@
 
     <!-- HAPUS BARIS -->
     <td class="py-3 px-4 text-center">
-        <button type="button" :disabled="pasiens.length === 1" @click="pasiens.splice(index, 1)"
-            :class="pasiens.length === 1 ? 'text-brand-gray/40 cursor-not-allowed text-sm' : 'text-rose-500 hover:text-rose-700 transition-colors text-sm'">
+        <button type="button" @click="pasiens.splice(index, 1)"
+            class="text-rose-500 hover:text-rose-700 transition-colors text-sm">
             <i class="fa-solid fa-trash-can"></i>
         </button>
     </td>

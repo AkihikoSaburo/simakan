@@ -65,6 +65,7 @@
                             <th class="py-3.5 px-4 min-w-[160px]">Bentuk Makanan</th>
                             <th class="py-3.5 px-4 min-w-[180px]">Jenis Diet</th>
                             <th class="py-3.5 px-4 min-w-[180px]">Keterangan Tambahan</th>
+                            <th class="py-3.5 px-4 text-center">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-brand-light text-sm transition-all duration-300 ease-in-out">
@@ -116,11 +117,14 @@
                                 <td class="py-3 px-4 text-xs text-brand-gray italic">
                                     {{ $detail->keterangan ?? 'Tidak ada keterangan' }}
                                 </td>
+                                <td class="py-3 px-4 text-center">
+                                    <a href="{{ route('bangsal.orders.edit', $order->id) }}" class="inline-flex items-center gap-1 px-2.5 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-700 font-medium text-xs rounded-lg transition-colors border border-amber-200 shadow-sm"><i class="fa-solid fa-pen-to-square"></i> Edit</a>
+                                </td>
                             </tr>
                         @endforeach
                     @empty
                         <tr>
-                            <td colspan="7" class="py-8 text-center text-brand-gray">
+                            <td colspan="8" class="py-8 text-center text-brand-gray">
                                 <div class="flex flex-col items-center justify-center gap-2">
                                     <i class="fa-solid fa-utensils text-2xl text-brand-light"></i>
                                     <p class="text-sm font-medium">Belum ada permintaan makanan yang dikirim hari ini.</p>

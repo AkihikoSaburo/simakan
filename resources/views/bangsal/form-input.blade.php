@@ -13,17 +13,62 @@
     <x-layout.navbar title="Digitalisasi Form Makanan" role="Bangsal" :username="auth()->user()->username"
         icon="fa-user-nurse" />
 
+    @php
+        $pasiensData = [];
+        if (isset($order)) {
+            foreach ($order->orderDetails as $detail) {
+                $bentukMakanan = [];
+                if ($detail->nasi) {
+                    $bentukMakanan[] = 'Nasi';
+                }
+                if ($detail->bubur) {
+                    $bentukMakanan[] = 'Bubur';
+                }
+                if ($detail->makanan_cair) {
+                    $bentukMakanan[] = 'Msk. Cair / Susu';
+                }
+                if ($detail->bs) {
+                    $bentukMakanan[] = 'Bubur Saring';
+                }
+                if ($detail->sonde) {
+                    $bentukMakanan[] = 'Sonde';
+                }
+
+                $pasiensData[] = [
+                    'nama_pasien' => $detail->patient->nama ?? '',
+                    'no_rm' => $detail->patient->no_rm ?? '',
+                    'kamar_kelas' => $detail->patient->kamar ?? '',
+                    'bentuk_makanan' => $bentukMakanan,
+                    'diet' => $detail->diet_pasien ?? '',
+                    'keterangan' => $detail->keterangan ?? '',
+                ];
+            }
+        } else {
+            $pasiensData[] = [
+                'nama_pasien' => '',
+                'no_rm' => '',
+                'kamar_kelas' => '',
+                'bentuk_makanan' => [],
+                'diet' => '',
+                'keterangan' => '',
+            ];
+        }
+    @endphp
+
     <main class="flex-1 w-full" x-data="{ 
-              pasiens: [{ nama_pasien: '', no_rm: '', kamar_kelas: '', bentuk_makanan: [], diet: '', keterangan: '' }],
+              pasiens: @js($pasiensData),
               opsiMakanan: ['Nasi', 'Bubur', 'Msk. Cair / Susu', 'Bubur Saring', 'Sonde'],
               activePasienIndex: null,
               showKonfirmasiModal: false
           }">
 
         <div class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
-            <form autocomplete="off" x-ref="orderForm" action="{{ route('bangsal.orders.store') }}" method="POST" class="space-y-6"
+            <form autocomplete="off" x-ref="orderForm" action="{{ isset($order) ? route('bangsal.orders.update', $order->id) : route('bangsal.orders.store') }}" method="POST" class="space-y-6"
                 @submit.prevent="showKonfirmasiModal = true">
                 @csrf
+                @if(isset($order))
+                    @method('PUT')
+                @endif
                 <div class="bg-brand-snow rounded-2xl border border-brand-light shadow-sm overflow-hidden">
                     <div class="p-5 border-b border-brand-light flex items-center justify-between bg-brand-light/10">
                         <div>
@@ -71,7 +116,7 @@
                     </a>
                     <button type="submit"
                         class="px-7 py-3 bg-brand-primary hover:bg-brand-primary/95 text-brand-snow font-bold rounded-xl shadow-lg shadow-brand-light transition-all active:transform active:scale-95 text-sm">
-                        <i class="fa-solid fa-paper-plane mr-2"></i>Kirim Ke Dapur Gizi
+                        <i class="fa-solid fa-paper-plane mr-2"></i>{{ isset($order) ? 'Simpan Perubahan' : 'Kirim Ke Dapur Gizi' }}
                     </button>
                 </div>
             </form>
@@ -162,10 +207,10 @@
                     <i class="fa-solid fa-triangle-exclamation"></i>
                 </div>
 
-                <h3 class="text-lg font-bold text-brand-dark">Kirim Permintaan Makanan?</h3>
+                <h3 class="text-lg font-bold text-brand-dark">{{ isset($order) ? 'Simpan Perubahan Permintaan?' : 'Kirim Permintaan Makanan?' }}</h3>
                 <p class="text-xs text-brand-gray mt-2 px-2">
                     Pastikan seluruh data diet dari <span class="font-bold text-brand-dark"
-                        x-text="pasiens.length"></span> pasien sudah benar. Data yang dikirim akan langsung diproses
+                        x-text="pasiens.length"></span> pasien sudah benar. Data yang {{ isset($order) ? 'diperbarui' : 'dikirim' }} akan langsung diproses
                     oleh Dapur Gizi.
                 </p>
 
@@ -176,7 +221,7 @@
                     </button>
                     <button type="button" @click="$refs.orderForm.submit()"
                         class="w-1/2 py-2.5 bg-brand-primary hover:bg-brand-primary/95 text-white font-bold rounded-xl text-xs shadow-md transition-all">
-                        Ya, Kirim Sekarang
+                        {{ isset($order) ? 'Ya, Simpan' : 'Ya, Kirim Sekarang' }}
                     </button>
                 </div>
             </div>
