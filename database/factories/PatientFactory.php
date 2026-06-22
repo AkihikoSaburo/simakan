@@ -19,7 +19,7 @@ class PatientFactory extends Factory
 
         return [
             'bangsal_id' => Bangsal::inRandomOrder()->first()?->id ?? Bangsal::factory(),
-            'no_rm' => fake()->unique()->numerify('##.##.##'),
+            'no_rm' => fake()->unique()->numerify('######'),
             'nama' => $nama,
             'kamar' => fake()->randomElement(['Kamar ', 'VIP ', 'Kelas ']) . fake()->numberBetween(101, 108),
             'tanggal_lahir' => fake()->date('Y-m-d', '-10 years'),

@@ -41,3 +41,5 @@
 @utility form-checkbox-brand {
     @apply rounded border-brand-light text-brand-primary focus:ring-brand-primary;
 }
+
+[x-cloak] { display: none !important; }

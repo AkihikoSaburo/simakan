@@ -82,58 +82,8 @@ window.tambahBarisPasien = function() {
     const nomorBaru = totalBaris + 1;
 
     const barisBaruHTML = `
-        <tr class="hover:bg-brand-light/5 transition-colors row-pasien">
-            <td class="py-3 px-4 text-center font-bold text-brand-gray index-nomor">${nomorBaru}</td>
-            <td class="py-3 px-3">
-                <input type="text" name="nama_pasien[]" required placeholder="Nama Lengkap" 
-                    class="form-input">
-            </td>
-            <td class="py-3 px-3">
-                <input type="text" name="no_rm[]" required placeholder="00-00-00" 
-                    class="form-input font-mono">
-            </td>
-            <td class="py-3 px-3">
-                <input type="text" name="kamar_kelas[]" required placeholder="Kmr 3 / Klst II" 
-                    class="form-input">
-            </td>
-            <td class="py-3 px-3 relative wrapper-bentuk-makanan">
-                <button type="button" 
-                    class="btn-dropdown form-input flex items-center justify-between">
-                    <span class="label-dropdown truncate text-brand-gray pointer-events-none">Pilih Bentuk Makanan</span>
-                    <i class="fa-solid fa-chevron-down text-[10px] text-brand-gray ml-1 pointer-events-none"></i>
-                </button>
-                <div class="menu-dropdown hidden fixed bg-white border border-brand-light rounded-xl shadow-lg z-50 max-h-48 overflow-y-auto p-2 space-y-1">
-                    <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-brand-light/40 rounded-lg cursor-pointer text-xs font-medium text-brand-dark">
-                        <input type="checkbox" name="bentuk_makanan[${nomorBaru - 1}][]" value="Nasi" class="form-checkbox-brand"> Nasi
-                    </label>
-                    <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-brand-light/40 rounded-lg cursor-pointer text-xs font-medium text-brand-dark">
-                        <input type="checkbox" name="bentuk_makanan[${nomorBaru - 1}][]" value="Bubur" class="form-checkbox-brand"> Bubur
-                    </label>
-                    <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-brand-light/40 rounded-lg cursor-pointer text-xs font-medium text-brand-dark">
-                        <input type="checkbox" name="bentuk_makanan[${nomorBaru - 1}][]" value="Msk. Cair / Susu" class="form-checkbox-brand"> Msk. Cair / Susu
-                    </label>
-                    <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-brand-light/40 rounded-lg cursor-pointer text-xs font-medium text-brand-dark">
-                        <input type="checkbox" name="bentuk_makanan[${nomorBaru - 1}][]" value="Bubur Saring" class="form-checkbox-brand"> Bubur Saring
-                    </label>
-                    <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-brand-light/40 rounded-lg cursor-pointer text-xs font-medium text-brand-dark">
-                        <input type="checkbox" name="bentuk_makanan[${nomorBaru - 1}][]" value="Sonde" class="form-checkbox-brand"> Sonde
-                    </label>
-                </div>
-            </td>
-            <td class="py-3 px-3">
-                <input type="text" name="diet[]" placeholder="Contoh: RG (Rendah Garam), DM" 
-                    class="form-input">
-            </td>
-            <td class="py-3 px-3">
-                <input type="text" name="keterangan[]" placeholder="Contoh: Tanpa Telur, Alergi" 
-                    class="form-input">
-            </td>
-            <td class="py-3 px-4 text-center">
-                <button type="button" onclick="hapusBarisPasien(this)" class="text-rose-500 hover:text-rose-700 transition-colors text-sm">
-                    <i class="fa-solid fa-trash-can"></i>
-                </button>
-            </td>
-        </tr>
+        <x-form.row-pasien-form
+            :nomorBaru="${nomorBaru}" />
     `;
 
     tbody.insertAdjacentHTML('beforeend', barisBaruHTML);

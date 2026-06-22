@@ -26,6 +26,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/bangsal/dashboard', [BangsalController::class, 'dashboard'])->name('bangsal.dashboard');
 
     Route::get('/bangsal/orders/create', [BangsalController::class, 'create'])->name('bangsal.orders.create');
+
+    Route::get('/bangsal/cari-pasien', [BangsalController::class, 'cariPasien'])->name('bangsal.pasien.cari');
+
     Route::post('/bangsal/orders', [BangsalController::class, 'store'])->name('bangsal.orders.store');
 
     Route::get('/bangsal/orders/{order}', [BangsalController::class, 'show'])->name('bangsal.orders.show');

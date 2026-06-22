@@ -19,7 +19,12 @@ class BangsalController extends Controller
             ->latest('tanggal_pesanan')
             ->get();
 
-        return view('bangsal.dashboard', compact('orders'));
+        $todayOrders = $bangsal->orders()
+            ->whereDate('tanggal_pesanan', today())
+            ->with('orderDetails')
+            ->get();
+
+        return view('bangsal.dashboard', compact('orders', 'todayOrders'));
     }
 
     public function create()
@@ -29,13 +34,15 @@ class BangsalController extends Controller
 
     public function store(Request $request)
     {
+        // 1. SESUAIKAN VALIDASI: Menyesuaikan dengan struktur data array 'pasiens' dari form Alpine
         $request->validate([
-            'nama_pasien' => 'required|array',
-            'nama_pasien.*' => 'required|string',
-            'no_rm' => 'required|array',
-            'no_rm.*' => 'required|string',
-            'kamar_kelas' => 'required|array',
-            'kamar_kelas.*' => 'required|string',
+            'pasiens' => 'required|array|min:1',
+            'pasiens.*.nama_pasien' => 'required|string',
+            'pasiens.*.no_rm' => 'required|string',
+            'pasiens.*.kamar_kelas' => 'required|string',
+            'pasiens.*.bentuk_makanan' => 'nullable|array',
+            'pasiens.*.diet' => 'nullable|string',
+            'pasiens.*.keterangan' => 'nullable|string',
         ]);
 
         $bangsalId = auth()->user()->bangsal_id;
@@ -47,28 +54,33 @@ class BangsalController extends Controller
                 'tanggal_pesanan' => today(),
             ]);
 
-            foreach ($request->nama_pasien as $index => $nama) {
+            // 2. SESUAIKAN LOOP: Iterasi langsung dari array objek pasiens
+            foreach ($request->pasiens as $dataPasien) {
+                $nama = $dataPasien['nama_pasien'];
+                $noRm = $dataPasien['no_rm'];
+                $kamarKelas = $dataPasien['kamar_kelas'];
+
                 // Find or create patient
                 $patient = Patient::firstOrCreate(
-                    ['no_rm' => $request->no_rm[$index]],
+                    ['no_rm' => $noRm],
                     [
                         'bangsal_id' => $bangsalId,
                         'nama' => $nama,
-                        'kamar' => $request->kamar_kelas[$index],
-                        'tanggal_lahir' => '2000-01-01', // Fallback for required field missing in form
+                        'kamar' => $kamarKelas,
+                        'tanggal_lahir' => '2000-01-01', // Fallback
                     ]
                 );
 
                 // Update bangsal and kamar if patient already exists but moved
-                if ($patient->bangsal_id !== $bangsalId || $patient->kamar !== $request->kamar_kelas[$index] || $patient->nama !== $nama) {
+                if ($patient->bangsal_id !== $bangsalId || $patient->kamar !== $kamarKelas || $patient->nama !== $nama) {
                     $patient->update([
                         'bangsal_id' => $bangsalId,
-                        'kamar' => $request->kamar_kelas[$index],
+                        'kamar' => $kamarKelas,
                         'nama' => $nama,
                     ]);
                 }
 
-                $bentukMakanan = $request->bentuk_makanan[$index] ?? [];
+                $bentukMakanan = $dataPasien['bentuk_makanan'] ?? [];
 
                 OrderDetail::create([
                     'order_id' => $order->id,
@@ -78,8 +90,8 @@ class BangsalController extends Controller
                     'makanan_cair' => in_array('Msk. Cair / Susu', $bentukMakanan),
                     'bs' => in_array('Bubur Saring', $bentukMakanan),
                     'sonde' => in_array('Sonde', $bentukMakanan),
-                    'diet_pasien' => $request->diet[$index] ?? null,
-                    'keterangan' => $request->keterangan[$index] ?? null,
+                    'diet_pasien' => $dataPasien['diet'] ?? null,
+                    'keterangan' => $dataPasien['keterangan'] ?? null,
                 ]);
             }
         });
@@ -100,5 +112,23 @@ class BangsalController extends Controller
         ]);
 
         return view('bangsal.detail', compact('order'));
+    }
+    public function cariPasien(Request $request)
+    {
+        $search = $request->query('nama');
+
+        $bangsalId = auth()->user()->bangsal_id;
+
+        if (!$search || strlen($search) < 3) {
+            return response()->json([]);
+        }
+
+        $pasiens = Patient::where('bangsal_id', $bangsalId)
+            ->where('nama', 'LIKE', '%' . $search . '%')
+            ->select('no_rm', 'nama', 'kamar')
+            ->take(5)
+            ->get();
+
+        return response()->json($pasiens);
     }
 }
