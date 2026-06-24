@@ -9,34 +9,43 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Response;
 
 class BangsalController extends Controller
 {
-    public function dashboard()
+    /**
+     * Display the ward dashboard.
+     */
+    public function dashboard(): View
     {
         $bangsal = auth()->user()->bangsal;
 
         $orders = $bangsal->orders()
-            ->with('orderDetails')
+            ->with(['orderDetails.patient', 'creator'])
             ->latest('tanggal_pesanan')
             ->get();
 
         $todayOrders = $bangsal->orders()
             ->whereDate('tanggal_pesanan', today())
-            ->with('orderDetails')
+            ->with(['orderDetails.patient', 'creator'])
             ->get();
 
         return view('bangsal.dashboard', compact('orders', 'todayOrders'));
     }
 
-    public function create()
+    /**
+     * Show the form for creating a new food order request.
+     */
+    public function create(): View
     {
         return view('bangsal.form-input');
     }
 
-    public function store(Request $request)
+    /**
+     * Store a newly created food order request.
+     */
+    public function store(Request $request): RedirectResponse
     {
-        // 1. SESUAIKAN VALIDASI: Menyesuaikan dengan struktur data array 'pasiens' dari form Alpine
         $request->validate([
             'pasiens' => 'required|array|min:1',
             'pasiens.*.nama_pasien' => 'required|string',
@@ -49,61 +58,64 @@ class BangsalController extends Controller
 
         $bangsalId = auth()->user()->bangsal_id;
 
-        DB::transaction(function () use ($request, $bangsalId) {
-            $order = Order::create([
-                'bangsal_id' => $bangsalId,
-                'created_by' => auth()->id(),
-                'tanggal_pesanan' => today(),
-            ]);
+        try {
+            DB::transaction(function () use ($request, $bangsalId) {
+                $order = Order::create([
+                    'bangsal_id' => $bangsalId,
+                    'created_by' => auth()->id(),
+                    'tanggal_pesanan' => today(),
+                ]);
 
-            // 2. SESUAIKAN LOOP: Iterasi langsung dari array objek pasiens
-            foreach ($request->pasiens as $dataPasien) {
-                $nama = $dataPasien['nama_pasien'];
-                $noRm = $dataPasien['no_rm'];
-                $kamarKelas = $dataPasien['kamar_kelas'];
+                foreach ($request->pasiens as $dataPasien) {
+                    $nama = $dataPasien['nama_pasien'];
+                    $noRm = $dataPasien['no_rm'];
+                    $kamarKelas = $dataPasien['kamar_kelas'];
 
-                // Find or create patient
-                $patient = Patient::firstOrCreate(
-                    ['no_rm' => $noRm],
-                    [
-                        'bangsal_id' => $bangsalId,
-                        'nama' => $nama,
-                        'kamar' => $kamarKelas,
-                        'tanggal_lahir' => '2000-01-01', // Fallback
-                    ]
-                );
+                    $patient = Patient::firstOrCreate(
+                        ['no_rm' => $noRm],
+                        [
+                            'bangsal_id' => $bangsalId,
+                            'nama' => $nama,
+                            'kamar' => $kamarKelas,
+                            'tanggal_lahir' => '2000-01-01',
+                        ]
+                    );
 
-                // Update bangsal and kamar if patient already exists but moved
-                if ($patient->bangsal_id !== $bangsalId || $patient->kamar !== $kamarKelas || $patient->nama !== $nama) {
-                    $patient->update([
-                        'bangsal_id' => $bangsalId,
-                        'kamar' => $kamarKelas,
-                        'nama' => $nama,
+                    if ($patient->bangsal_id !== $bangsalId || $patient->kamar !== $kamarKelas || $patient->nama !== $nama) {
+                        $patient->update([
+                            'bangsal_id' => $bangsalId,
+                            'kamar' => $kamarKelas,
+                            'nama' => $nama,
+                        ]);
+                    }
+
+                    $bentukMakanan = $dataPasien['bentuk_makanan'] ?? [];
+
+                    OrderDetail::create([
+                        'order_id' => $order->id,
+                        'patient_id' => $patient->id,
+                        'nasi' => in_array('Nasi', $bentukMakanan),
+                        'bubur' => in_array('Bubur', $bentukMakanan),
+                        'makanan_cair' => in_array('Msk. Cair / Susu', $bentukMakanan),
+                        'bs' => in_array('Bubur Saring', $bentukMakanan),
+                        'sonde' => in_array('Sonde', $bentukMakanan),
+                        'diet_pasien' => $dataPasien['diet'] ?? null,
+                        'keterangan' => $dataPasien['keterangan'] ?? null,
                     ]);
                 }
+            });
 
-                $bentukMakanan = $dataPasien['bentuk_makanan'] ?? [];
-
-                OrderDetail::create([
-                    'order_id' => $order->id,
-                    'patient_id' => $patient->id,
-                    'nasi' => in_array('Nasi', $bentukMakanan),
-                    'bubur' => in_array('Bubur', $bentukMakanan),
-                    'makanan_cair' => in_array('Msk. Cair / Susu', $bentukMakanan),
-                    'bs' => in_array('Bubur Saring', $bentukMakanan),
-                    'sonde' => in_array('Sonde', $bentukMakanan),
-                    'diet_pasien' => $dataPasien['diet'] ?? null,
-                    'keterangan' => $dataPasien['keterangan'] ?? null,
-                ]);
-            }
-        });
-
-        return redirect()->route('bangsal.dashboard')->with('success', 'Permintaan makanan berhasil dikirim ke Dapur Gizi.');
+            return redirect()->route('bangsal.dashboard')->with('success', 'Permintaan makanan berhasil dikirim ke Dapur Gizi.');
+        } catch (\Exception $e) {
+            return redirect()->back()->withInput()->with('error', 'Gagal memproses permintaan makanan: ' . $e->getMessage());
+        }
     }
 
-    public function show(Order $order)
+    /**
+     * Show the details of a specific food order request.
+     */
+    public function show(Order $order): View
     {
-        // Pastikan hanya boleh melihat order milik bangsal sendiri
         if ($order->bangsal_id !== auth()->user()->bangsal_id) {
             abort(403);
         }
@@ -111,14 +123,43 @@ class BangsalController extends Controller
         $order->load([
             'bangsal',
             'orderDetails.patient',
+            'creator',
         ]);
 
         return view('bangsal.detail', compact('order'));
     }
 
+    /**
+     * Export a specific food order request as PDF.
+     */
+    public function exportPdf(Order $order): Response
+    {
+        if ($order->bangsal_id !== auth()->user()->bangsal_id) {
+            abort(403);
+        }
+
+        $order->load([
+            'bangsal',
+            'orderDetails.patient',
+            'creator',
+        ]);
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('bangsal.pdf', compact('order'));
+
+        $filename = sprintf(
+            'Form-Makanan-%s-%s.pdf',
+            str_replace(' ', '-', $order->bangsal->nama_bangsal),
+            $order->tanggal_pesanan->format('Y-m-d')
+        );
+
+        return $pdf->stream($filename);
+    }
+
+    /**
+     * Show the form for editing an existing food order request.
+     */
     public function edit(Order $order): View
     {
-        // Pastikan hanya boleh mengedit order milik bangsal sendiri
         if ($order->bangsal_id !== auth()->user()->bangsal_id) {
             abort(403);
         }
@@ -130,9 +171,11 @@ class BangsalController extends Controller
         return view('bangsal.form-input', compact('order'));
     }
 
+    /**
+     * Update an existing food order request.
+     */
     public function update(Request $request, Order $order): RedirectResponse
     {
-        // Pastikan hanya boleh mengupdate order milik bangsal sendiri
         if ($order->bangsal_id !== auth()->user()->bangsal_id) {
             abort(403);
         }
@@ -149,58 +192,61 @@ class BangsalController extends Controller
 
         $bangsalId = auth()->user()->bangsal_id;
 
-        DB::transaction(function () use ($request, $order, $bangsalId) {
-            // Hapus detail porsi makan lama
-            $order->orderDetails()->delete();
+        try {
+            DB::transaction(function () use ($request, $order, $bangsalId) {
+                $order->orderDetails()->delete();
 
-            // Masukkan data array pasiens yang baru
-            foreach ($request->pasiens as $dataPasien) {
-                $nama = $dataPasien['nama_pasien'];
-                $noRm = $dataPasien['no_rm'];
-                $kamarKelas = $dataPasien['kamar_kelas'];
+                foreach ($request->pasiens as $dataPasien) {
+                    $nama = $dataPasien['nama_pasien'];
+                    $noRm = $dataPasien['no_rm'];
+                    $kamarKelas = $dataPasien['kamar_kelas'];
 
-                // Find or create patient
-                $patient = Patient::firstOrCreate(
-                    ['no_rm' => $noRm],
-                    [
-                        'bangsal_id' => $bangsalId,
-                        'nama' => $nama,
-                        'kamar' => $kamarKelas,
-                        'tanggal_lahir' => '2000-01-01', // Fallback
-                    ]
-                );
+                    $patient = Patient::firstOrCreate(
+                        ['no_rm' => $noRm],
+                        [
+                            'bangsal_id' => $bangsalId,
+                            'nama' => $nama,
+                            'kamar' => $kamarKelas,
+                            'tanggal_lahir' => '2000-01-01',
+                        ]
+                    );
 
-                // Update bangsal, kamar, and nama if patient already exists but details changed
-                if ($patient->bangsal_id !== $bangsalId || $patient->kamar !== $kamarKelas || $patient->nama !== $nama) {
-                    $patient->update([
-                        'bangsal_id' => $bangsalId,
-                        'kamar' => $kamarKelas,
-                        'nama' => $nama,
+                    if ($patient->bangsal_id !== $bangsalId || $patient->kamar !== $kamarKelas || $patient->nama !== $nama) {
+                        $patient->update([
+                            'bangsal_id' => $bangsalId,
+                            'kamar' => $kamarKelas,
+                            'nama' => $nama,
+                        ]);
+                    }
+
+                    $bentukMakanan = $dataPasien['bentuk_makanan'] ?? [];
+
+                    OrderDetail::create([
+                        'order_id' => $order->id,
+                        'patient_id' => $patient->id,
+                        'nasi' => in_array('Nasi', $bentukMakanan),
+                        'bubur' => in_array('Bubur', $bentukMakanan),
+                        'makanan_cair' => in_array('Msk. Cair / Susu', $bentukMakanan),
+                        'bs' => in_array('Bubur Saring', $bentukMakanan),
+                        'sonde' => in_array('Sonde', $bentukMakanan),
+                        'diet_pasien' => $dataPasien['diet'] ?? null,
+                        'keterangan' => $dataPasien['keterangan'] ?? null,
                     ]);
                 }
+            });
 
-                $bentukMakanan = $dataPasien['bentuk_makanan'] ?? [];
-
-                OrderDetail::create([
-                    'order_id' => $order->id,
-                    'patient_id' => $patient->id,
-                    'nasi' => in_array('Nasi', $bentukMakanan),
-                    'bubur' => in_array('Bubur', $bentukMakanan),
-                    'makanan_cair' => in_array('Msk. Cair / Susu', $bentukMakanan),
-                    'bs' => in_array('Bubur Saring', $bentukMakanan),
-                    'sonde' => in_array('Sonde', $bentukMakanan),
-                    'diet_pasien' => $dataPasien['diet'] ?? null,
-                    'keterangan' => $dataPasien['keterangan'] ?? null,
-                ]);
-            }
-        });
-
-        return redirect()->route('bangsal.dashboard')->with('success', 'Permintaan makanan berhasil diperbarui.');
+            return redirect()->route('bangsal.dashboard')->with('success', 'Permintaan makanan berhasil diperbarui.');
+        } catch (\Exception $e) {
+            return redirect()->back()->withInput()->with('error', 'Gagal memperbarui permintaan makanan: ' . $e->getMessage());
+        }
     }
-    public function cariPasien(Request $request)
+
+    /**
+     * Search patients in the database.
+     */
+    public function cariPasien(Request $request): \Illuminate\Http\JsonResponse
     {
         $search = $request->query('nama');
-
         $bangsalId = auth()->user()->bangsal_id;
 
         if (!$search || strlen($search) < 3) {

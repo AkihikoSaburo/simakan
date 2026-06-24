@@ -5,13 +5,11 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DapurController;
 use App\Http\Controllers\BangsalController;
 
-Route::get('/login', [AuthController::class, 'showLogin'])
-    ->name('login');
+Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 
 Route::post('/login', [AuthController::class, 'login']);
 
-Route::post('/logout', [AuthController::class, 'logout'])
-    ->name('logout');
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::middleware('auth')->group(function () {
 
@@ -32,6 +30,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/bangsal/orders', [BangsalController::class, 'store'])->name('bangsal.orders.store');
 
     Route::get('/bangsal/orders/{order}', [BangsalController::class, 'show'])->name('bangsal.orders.show');
+
+    Route::get('/bangsal/orders/{order}/pdf', [BangsalController::class, 'exportPdf'])->name('bangsal.orders.pdf');
 
     Route::get('/bangsal/orders/{order}/edit', [BangsalController::class, 'edit'])->name('bangsal.orders.edit');
 
