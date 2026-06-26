@@ -18,7 +18,7 @@
             <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/10 z-0"></div>
 
             <div class="flex items-center space-x-3 z-10">
-                <span class="text-2xl font-black text-white tracking-wide drop-shadow-md">Sistem Manajemen Makanan Pasien<br>RSUD Andi Makkasau</span>
+                <span class="text-2xl font-black text-white tracking-wide drop-shadow-md">Sistem Manajemen Makanan Pasien<br>{{ $nama_rumah_sakit ?? 'RSUD Andi Makkasau' }}</span>
             </div>
 
             <div class="text-white text-sm z-10 flex justify-between font-medium drop-shadow-md">
