@@ -35,7 +35,7 @@
             </div>
             
             <div class="flex items-center gap-3">
-                <a href="{{ route('dapur.dashboard') }}"
+                <a href="{{ auth()->user()->role === 'admin' ? route('admin.dashboard') : route('dapur.dashboard') }}"
                     class="inline-flex items-center gap-1.5 px-4 py-2.5 border border-brand-light text-brand-slate font-bold text-xs rounded-xl hover:bg-brand-light/30 transition-colors shadow-sm bg-white">
                     <i class="fa-solid fa-arrow-left"></i> Kembali ke Dashboard
                 </a>

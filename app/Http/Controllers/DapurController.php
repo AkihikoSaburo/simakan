@@ -11,7 +11,9 @@ class DapurController extends Controller
     public function dashboard()
     {
         $orders = Order::with([
-            'bangsal',
+            'bangsal' => function ($query) {
+                $query->withTrashed();
+            },
             'orderDetails.patient'
         ])
             ->whereDate('tanggal_pesanan', today())
@@ -24,7 +26,9 @@ class DapurController extends Controller
     public function show(Order $order)
     {
         $order->load([
-            'bangsal',
+            'bangsal' => function ($query) {
+                $query->withTrashed();
+            },
             'orderDetails.patient'
         ]);
 
@@ -43,7 +47,13 @@ class DapurController extends Controller
         $dateStrings = $paginatedDates->pluck('tanggal_pesanan')->map(fn($d) => $d->format('Y-m-d'))->toArray();
 
         // Retrieve orders for the paginated dates
-        $orders = Order::with(['bangsal', 'orderDetails.patient', 'creator'])
+        $orders = Order::with([
+            'bangsal' => function ($query) {
+                $query->withTrashed();
+            },
+            'orderDetails.patient',
+            'creator'
+        ])
             ->whereIn('tanggal_pesanan', $dateStrings)
             ->latest()
             ->get();
@@ -59,7 +69,13 @@ class DapurController extends Controller
         $carbonDate = Carbon::parse($date);
 
         // Fetch all orders on this date
-        $orders = Order::with(['bangsal', 'orderDetails.patient', 'creator'])
+        $orders = Order::with([
+            'bangsal' => function ($query) {
+                $query->withTrashed();
+            },
+            'orderDetails.patient',
+            'creator'
+        ])
             ->whereDate('tanggal_pesanan', $carbonDate)
             ->get();
 
@@ -84,7 +100,9 @@ class DapurController extends Controller
     {
         // 1. Load semua relasi yang dibutuhkan agar tidak terkena N+1 query issue
         $order->load([
-            'bangsal',
+            'bangsal' => function ($query) {
+                $query->withTrashed();
+            },
             'orderDetails.patient',
             'creator'
         ]);
@@ -92,14 +110,13 @@ class DapurController extends Controller
         // 2. Gunakan Carbon untuk format tanggal di dalam PDF jika dibutuhkan
         $carbonDate = $order->tanggal_pesanan;
 
-        // 3. Arahkan ke view PDF (kamu bisa pakai view dapur.pdf yang sama, 
-        // atau buat file baru dapur-single.pdf jika strukturnya berbeda)
+        // 3. Arahkan ke view PDF
         $pdf = Pdf::loadView('dapur.single-order-pdf', compact('order', 'carbonDate'));
 
         // 4. Susun nama file agar unik berdasarkan nama bangsal dan tanggalnya
         $filename = sprintf(
             'Form-Makanan-%s-%s.pdf',
-            str_replace(' ', '-', $order->bangsal->nama_bangsal),
+            str_replace(' ', '-', $order->bangsal?->nama_bangsal ?? 'Bangsal-Nonaktif'),
             $carbonDate->format('Y-m-d')
         );
 

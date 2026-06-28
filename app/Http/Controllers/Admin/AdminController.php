@@ -23,7 +23,12 @@ class AdminController extends Controller
         $todayOrdersCount = Order::whereDate('created_at', today())->count();
 
         // Get recent activity (e.g. recent orders and users)
-        $recentOrders = Order::with('creator', 'bangsal')
+        $recentOrders = Order::with([
+            'creator',
+            'bangsal' => function ($query) {
+                $query->withTrashed();
+            }
+        ])
             ->orderBy('created_at', 'desc')
             ->limit(5)
             ->get();
@@ -37,7 +42,11 @@ class AdminController extends Controller
     public function index()
     {
         $users = User::whereIn('role', ['dapur', 'bangsal'])
-            ->with('bangsal')
+            ->with([
+                'bangsal' => function ($query) {
+                    $query->withTrashed();
+                }
+            ])
             ->orderBy('role', 'asc')
             ->orderBy('username', 'asc')
             ->get();

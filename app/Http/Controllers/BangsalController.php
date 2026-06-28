@@ -24,24 +24,29 @@ class BangsalController extends Controller
 
         // JARING PENGAMAN: Jika user tidak terikat dengan bangsal aktif apa pun
         if (!$user->bangsal_id || !$user->bangsal) {
-            // Pilihan 1: Lempar ke view khusus pemberitahuan terisolasi
             return view('bangsal.no_bangsal');
-
-            // Pilihan 2: Atau logout otomatis dan kembalikan ke login dengan pesan eror
-            // auth()->logout();
-            // return redirect()->route('login')->withErrors(['username' => 'Akun Anda belum dikaitkan ke bangsal aktif mana pun. Silakan hubungi Admin.']);
         }
 
-        // Kode lamamu di bawah ini sekarang dijamin aman dari crash null
         $bangsal = $user->bangsal;
-        $orders = $bangsal->orders()->latest()->paginate(10);
 
-        return view('bangsal.dashboard', compact('orders', 'bangsal'));
+        // Ambil pesanan hari ini dari bangsal aktif ini dengan eager loading relasi untuk mencegah N+1
+        $todayOrders = Order::where('bangsal_id', $bangsal->id)
+            ->whereDate('tanggal_pesanan', today())
+            ->with(['orderDetails.patient', 'creator'])
+            ->latest()
+            ->get();
+
+        return view('bangsal.dashboard', compact('todayOrders', 'bangsal'));
     }
 
     public function riwayat(Request $request): View
     {
-        $bangsal = auth()->user()->bangsal;
+        $user = auth()->user();
+        if (!$user->bangsal_id || !$user->bangsal) {
+            abort(403, 'Akun Anda tidak dikaitkan dengan bangsal aktif mana pun.');
+        }
+
+        $bangsal = $user->bangsal;
 
         $orders = $bangsal->orders()
             ->with(['orderDetails.patient', 'creator'])
@@ -49,8 +54,6 @@ class BangsalController extends Controller
                 return $query->whereDate('tanggal_pesanan', $request->date);
             })
             ->latest('tanggal_pesanan')
-            // GANTI ->get() MENJADI ->paginate(10)
-            // appends() berguna agar saat pindah halaman, filter tanggalnya tidak hilang
             ->paginate(10)
             ->withQueryString();
 
@@ -62,6 +65,11 @@ class BangsalController extends Controller
      */
     public function create(): View
     {
+        $user = auth()->user();
+        if (!$user->bangsal_id || !$user->bangsal) {
+            abort(403, 'Akun Anda tidak dikaitkan dengan bangsal aktif mana pun.');
+        }
+
         return view('bangsal.form-input');
     }
 
@@ -70,6 +78,11 @@ class BangsalController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+        $user = auth()->user();
+        if (!$user->bangsal_id || !$user->bangsal) {
+            abort(403, 'Akun Anda tidak dikaitkan dengan bangsal aktif mana pun.');
+        }
+
         $request->validate([
             'pasiens' => 'required|array|min:1',
             'pasiens.*.nama_pasien' => 'required|string',
@@ -80,7 +93,7 @@ class BangsalController extends Controller
             'pasiens.*.keterangan' => 'nullable|string',
         ]);
 
-        $bangsalId = auth()->user()->bangsal_id;
+        $bangsalId = $user->bangsal_id;
 
         try {
             DB::transaction(function () use ($request, $bangsalId) {
@@ -140,12 +153,17 @@ class BangsalController extends Controller
      */
     public function show(Order $order): View
     {
-        if ($order->bangsal_id !== auth()->user()->bangsal_id) {
-            abort(403);
+        $user = auth()->user();
+        
+        // Proteksi IDOR: Hanya ijinkan jika user adalah pemilik bangsal yang bersangkutan atau admin/superadmin/dapur
+        if ($user->role === 'bangsal' && $order->bangsal_id !== $user->bangsal_id) {
+            abort(403, 'Anda tidak memiliki hak akses untuk melihat manifes dari bangsal lain.');
         }
 
         $order->load([
-            'bangsal',
+            'bangsal' => function ($query) {
+                $query->withTrashed();
+            },
             'orderDetails.patient',
             'creator',
         ]);
@@ -158,13 +176,17 @@ class BangsalController extends Controller
      */
     public function exportSingleOrderPdf($id)
     {
-        // Jika rute memakai Route Model Binding (public function exportSingleOrderPdf(Order $order))
-        // Kamu bisa panggil load() dengan query constraint:
-        $order = Order::findOrFail($id); // atau langsung gunakan variabel $order yang ada
+        $order = Order::findOrFail($id);
+        $user = auth()->user();
+
+        // Proteksi IDOR: Mencegah pengguna menebak ID pesanan milik bangsal lain
+        if ($user->role === 'bangsal' && $order->bangsal_id !== $user->bangsal_id) {
+            abort(403, 'Anda tidak memiliki hak akses untuk mencetak manifes dari bangsal lain.');
+        }
 
         $order->load([
             'bangsal' => function ($query) {
-                $query->withTrashed(); // TETAP AMBIL WALAUPUN SUDAH DIARSIPKAN
+                $query->withTrashed();
             },
             'creator',
             'orderDetails.patient'
@@ -179,8 +201,9 @@ class BangsalController extends Controller
      */
     public function edit(Order $order): View
     {
-        if ($order->bangsal_id !== auth()->user()->bangsal_id) {
-            abort(403);
+        $user = auth()->user();
+        if ($user->role === 'bangsal' && $order->bangsal_id !== $user->bangsal_id) {
+            abort(403, 'Anda tidak memiliki hak akses untuk mengedit manifes dari bangsal lain.');
         }
 
         $order->load([
@@ -195,8 +218,9 @@ class BangsalController extends Controller
      */
     public function update(Request $request, Order $order): RedirectResponse
     {
-        if ($order->bangsal_id !== auth()->user()->bangsal_id) {
-            abort(403);
+        $user = auth()->user();
+        if ($user->role === 'bangsal' && $order->bangsal_id !== $user->bangsal_id) {
+            abort(403, 'Anda tidak memiliki hak akses untuk memperbarui manifes dari bangsal lain.');
         }
 
         $request->validate([
@@ -209,7 +233,7 @@ class BangsalController extends Controller
             'pasiens.*.keterangan' => 'nullable|string',
         ]);
 
-        $bangsalId = auth()->user()->bangsal_id;
+        $bangsalId = $user->bangsal_id;
 
         try {
             DB::transaction(function () use ($request, $order, $bangsalId) {
@@ -265,8 +289,13 @@ class BangsalController extends Controller
      */
     public function cariPasien(Request $request): \Illuminate\Http\JsonResponse
     {
+        $user = auth()->user();
+        if (!$user->bangsal_id || !$user->bangsal) {
+            return response()->json([]);
+        }
+
         $search = $request->query('nama');
-        $bangsalId = auth()->user()->bangsal_id;
+        $bangsalId = $user->bangsal_id;
 
         if (!$search || strlen($search) < 3) {
             return response()->json([]);

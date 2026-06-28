@@ -110,9 +110,9 @@ class AdminBangsalController extends Controller
     {
         $bangsal = Bangsal::onlyTrashed()->findOrFail($id);
 
-        // Tampung kueri dasar pesanan
+        // Tampung kueri dasar pesanan dengan eager loading
         $orders = Order::where('bangsal_id', $id)
-            ->with('creator')
+            ->with(['creator', 'orderDetails'])
             ->latest();
 
         // JIKA FORM FILTER TANGGAL DIKLIK, SARING DATA SESUAI REQUEST

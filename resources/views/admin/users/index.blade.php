@@ -88,7 +88,10 @@
                                     @else
                                         <span class="text-brand-primary font-bold">
                                             <i class="fa-solid fa-hospital-user mr-1 text-xs"></i>
-                                            {{ $user->bangsal->nama_bangsal ?? 'Belum Ditentukan' }}
+                                            {{ $user->bangsal?->nama_bangsal ?? 'Belum Ditentukan' }}
+                                            @if($user->bangsal?->trashed())
+                                                <span class="text-rose-500 font-medium text-xs">(Arsip)</span>
+                                            @endif
                                         </span>
                                     @endif
                                 </td>

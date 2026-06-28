@@ -17,7 +17,7 @@
                 <span class="text-xs font-bold text-brand-gray uppercase tracking-wider flex items-center gap-1">
                     <i class="fa-solid fa-archive text-[10px]"></i> Dokumen Arsip Read-Only
                 </span>
-                <h2 class="text-2xl font-black text-brand-dark mt-1">Bangsal: {{ $order->bangsal->nama_bangsal ?? 'Bangsal Nonaktif' }}</h2>
+                <h2 class="text-2xl font-black text-brand-dark mt-1">Bangsal: {{ $order->bangsal?->nama_bangsal ?? 'Bangsal Nonaktif' }}</h2>
                 <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-brand-gray mt-2 font-medium">
                     <span class="flex items-center gap-1">
                         <i class="fa-solid fa-calendar text-brand-primary"></i>
@@ -26,7 +26,7 @@
                     <span class="h-3 w-px bg-brand-light hidden sm:inline"></span>
                     <span class="flex items-center gap-1">
                         <i class="fa-solid fa-user text-brand-primary"></i>
-                        Petugas Pengirim: {{ $order->creator->username ?? '-' }}
+                        Petugas Pengirim: {{ $order->creator?->username ?? '-' }}
                     </span>
                     <span class="h-3 w-px bg-brand-light hidden sm:inline"></span>
                     <span class="flex items-center gap-1">

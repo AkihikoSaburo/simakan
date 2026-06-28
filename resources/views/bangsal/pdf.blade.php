@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Form Permintaan Makanan Pasien - {{ $order->bangsal->nama_bangsal ?? 'Bangsal Nonaktif' }}</title>
+    <title>Form Permintaan Makanan Pasien - {{ $order->bangsal?->nama_bangsal ?? 'Bangsal Nonaktif' }}</title>
     <style>
         @page {
             size: A4 portrait;
@@ -229,7 +229,7 @@
                 </td>
                 <td class="meta-info" style="width: 45%;">
                     <div style="margin-bottom: 2px;">Ruangan / Bangsal:
-                        <strong>{{ $order->bangsal->nama_bangsal ?? 'Bangsal Nonaktif (Arsip)' }}</strong></div>
+                        <strong>{{ $order->bangsal?->nama_bangsal ?? 'Bangsal Nonaktif (Arsip)' }}</strong></div>
                     <div>Tanggal: <strong>{{ $order->tanggal_pesanan->translatedFormat('d / m / Y') }}</strong></div>
                 </td>
             </tr>
@@ -327,7 +327,7 @@
 
             <div class="signature-box">
                 <p class="signature-title">Yang Meminta,</p>
-                <p class="signature-name">{{ $order->creator->username ?? 'Staf Ruangan' }}</p>
+                <p class="signature-name">{{ $order->creator?->username ?? 'Staf Ruangan' }}</p>
                 <p class="signature-sub">Petugas Ruangan / Bangsal</p>
             </div>
 

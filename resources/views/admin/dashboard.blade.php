@@ -91,9 +91,9 @@
                         @forelse($recentOrders as $index => $order)
                             <tr class="hover:bg-brand-light/5 transition-colors">
                                 <td class="py-3 px-4 text-center font-bold text-brand-gray">{{ $index + 1 }}</td>
-                                <td class="py-3 px-4 font-semibold text-brand-dark">{{ $order->creator->username ?? '-' }}
+                                <td class="py-3 px-4 font-semibold text-brand-dark">{{ $order->creator?->username ?? '-' }}
                                 </td>
-                                <td class="py-3 px-4 text-brand-slate">{{ $order->bangsal->nama_bangsal ?? '-' }}</td>
+                                <td class="py-3 px-4 text-brand-slate">{{ $order->bangsal?->nama_bangsal ?? '-' }}</td>
                                 <td class="py-3 px-4">
                                     <div class="flex flex-col">
                                         <span class="font-medium text-brand-dark flex items-center gap-1.5">
