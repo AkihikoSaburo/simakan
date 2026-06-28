@@ -105,11 +105,13 @@ Route::middleware('auth')->group(function () {
     // Dapur Routes
     Route::middleware('role:dapur')->group(function () {
         Route::get('/dapur/dashboard', [DapurController::class, 'dashboard'])
-            ->name('dapur.dashboard');
+          ->name('dapur.dashboard');
         Route::get('/dapur/orders/{order}', [DapurController::class, 'show'])
-            ->name('dapur.orders.show');
+          ->name('dapur.orders.show');
         Route::get('/dapur/history', [DapurController::class, 'history'])
-            ->name('dapur.history');
+          ->name('dapur.history');
+        Route::get('/dapur/history/pdf/{date}', [DapurController::class, 'exportDailyPdf'])
+          ->name('dapur.history.pdf');
     });
 });
 
