@@ -23,6 +23,7 @@
                     :title="$action['title']"
                     :description="$action['description']"
                     :icon="$action['icon']"
+                    :color="$action['color'] ?? 'primary'"
                 />
             </button>
         @else
@@ -31,6 +32,7 @@
                     :title="$action['title']"
                     :description="$action['description']"
                     :icon="$action['icon']"
+                    :color="$action['color'] ?? 'primary'"
                 />
             </a>
         @endif

@@ -11,7 +11,6 @@
 <body class="bg-brand-snow font-sans text-brand-dark antialiased min-h-screen flex flex-col">
 
     <x-layout.navbar title="Edit Nama Bangsal" icon="fa-hospital" />
-    <x-layout.subnav />
 
     <main class="flex-1 max-w-2xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
 

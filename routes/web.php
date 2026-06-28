@@ -82,8 +82,8 @@ Route::middleware('auth')->group(function () {
             ->name('admin.settings.update');
     });
 
-    // Bangsal Routes
-    Route::middleware('role:bangsal')->group(function () {
+    // Bangsal Routes (Admin & Superadmin Bisa Akses)
+    Route::middleware('role:bangsal,admin,superadmin')->group(function () {
         Route::get('/bangsal/dashboard', [BangsalController::class, 'dashboard'])
             ->name('bangsal.dashboard');
         Route::get('/bangsal/orders/create', [BangsalController::class, 'create'])
@@ -94,20 +94,24 @@ Route::middleware('auth')->group(function () {
             ->name('bangsal.orders.store');
         Route::get('/bangsal/orders/{order}', [BangsalController::class, 'show'])
             ->name('bangsal.orders.show');
-        Route::get('/bangsal/orders/{order}/pdf', [BangsalController::class, 'exportPdf'])
+        Route::get('/bangsal/orders/{order}/pdf', [BangsalController::class, 'exportSingleOrderPdf'])
             ->name('bangsal.orders.pdf');
         Route::get('/bangsal/orders/{order}/edit', [BangsalController::class, 'edit'])
             ->name('bangsal.orders.edit');
         Route::put('/bangsal/orders/{order}', [BangsalController::class, 'update'])
             ->name('bangsal.orders.update');
+        Route::get('/bangsal/riwayat', [BangsalController::class, 'riwayat'])
+            ->name('bangsal.riwayat');
     });
 
-    // Dapur Routes
-    Route::middleware('role:dapur')->group(function () {
+    // Dapur Routes (Admin & Superadmin Bisa Akses)
+    Route::middleware('role:dapur,admin,superadmin')->group(function () {
         Route::get('/dapur/dashboard', [DapurController::class, 'dashboard'])
           ->name('dapur.dashboard');
         Route::get('/dapur/orders/{order}', [DapurController::class, 'show'])
           ->name('dapur.orders.show');
+        Route::get('/dapur/orders/{order}/pdf', [DapurController::class, 'exportSingleOrderPdf'])
+            ->name('dapur.orders.pdf');
         Route::get('/dapur/history', [DapurController::class, 'history'])
           ->name('dapur.history');
         Route::get('/dapur/history/pdf/{date}', [DapurController::class, 'exportDailyPdf'])

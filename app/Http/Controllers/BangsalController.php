@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
+use Carbon\Carbon;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class BangsalController extends Controller
 {
@@ -20,17 +22,30 @@ class BangsalController extends Controller
     {
         $bangsal = auth()->user()->bangsal;
 
-        $orders = $bangsal->orders()
-            ->with(['orderDetails.patient', 'creator'])
-            ->latest('tanggal_pesanan')
-            ->get();
-
         $todayOrders = $bangsal->orders()
             ->whereDate('tanggal_pesanan', today())
             ->with(['orderDetails.patient', 'creator'])
             ->get();
 
-        return view('bangsal.dashboard', compact('orders', 'todayOrders'));
+        return view('bangsal.dashboard', compact('todayOrders'));
+    }
+
+    public function riwayat(Request $request): View
+    {
+        $bangsal = auth()->user()->bangsal;
+
+        $orders = $bangsal->orders()
+            ->with(['orderDetails.patient', 'creator'])
+            ->when($request->filled('date'), function ($query) use ($request) {
+                return $query->whereDate('tanggal_pesanan', $request->date);
+            })
+            ->latest('tanggal_pesanan')
+            // GANTI ->get() MENJADI ->paginate(10)
+            // appends() berguna agar saat pindah halaman, filter tanggalnya tidak hilang
+            ->paginate(10)
+            ->withQueryString();
+
+        return view('bangsal.riwayat', compact('orders'));
     }
 
     /**
@@ -130,28 +145,32 @@ class BangsalController extends Controller
     }
 
     /**
-     * Export a specific food order request as PDF.
+     * Export single order request as PDF for Dapur Gizi.
      */
-    public function exportPdf(Order $order): Response
+    public function exportSingleOrderPdf(Order $order)
     {
-        if ($order->bangsal_id !== auth()->user()->bangsal_id) {
-            abort(403);
-        }
-
+        // 1. Load semua relasi yang dibutuhkan agar tidak terkena N+1 query issue
         $order->load([
-            'bangsal',
-            'orderDetails.patient',
-            'creator',
+            'bangsal', 
+            'orderDetails.patient', 
+            'creator'
         ]);
 
-        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('bangsal.pdf', compact('order'));
+        // 2. Gunakan Carbon untuk format tanggal di dalam PDF jika dibutuhkan
+        $carbonDate = $order->tanggal_pesanan;
 
+        // 3. Arahkan ke view PDF (kamu bisa pakai view dapur.pdf yang sama, 
+        // atau buat file baru dapur-single.pdf jika strukturnya berbeda)
+        $pdf = Pdf::loadView('bangsal.pdf', compact('order', 'carbonDate'));
+
+        // 4. Susun nama file agar unik berdasarkan nama bangsal dan tanggalnya
         $filename = sprintf(
             'Form-Makanan-%s-%s.pdf',
             str_replace(' ', '-', $order->bangsal->nama_bangsal),
-            $order->tanggal_pesanan->format('Y-m-d')
+            $carbonDate->format('Y-m-d')
         );
 
+        // 5. Stream PDF ke browser
         return $pdf->stream($filename);
     }
 

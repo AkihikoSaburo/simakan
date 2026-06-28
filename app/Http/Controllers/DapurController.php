@@ -14,9 +14,9 @@ class DapurController extends Controller
             'bangsal',
             'orderDetails.patient'
         ])
-        ->whereDate('tanggal_pesanan', today())
-        ->latest()
-        ->get();
+            ->whereDate('tanggal_pesanan', today())
+            ->latest()
+            ->get();
 
         return view('dapur.dashboard', compact('orders'));
     }
@@ -74,6 +74,36 @@ class DapurController extends Controller
             $carbonDate->format('Y-m-d')
         );
 
+        return $pdf->stream($filename);
+    }
+
+    /**
+     * Export single order request as PDF for Dapur Gizi.
+     */
+    public function exportSingleOrderPdf(Order $order)
+    {
+        // 1. Load semua relasi yang dibutuhkan agar tidak terkena N+1 query issue
+        $order->load([
+            'bangsal',
+            'orderDetails.patient',
+            'creator'
+        ]);
+
+        // 2. Gunakan Carbon untuk format tanggal di dalam PDF jika dibutuhkan
+        $carbonDate = $order->tanggal_pesanan;
+
+        // 3. Arahkan ke view PDF (kamu bisa pakai view dapur.pdf yang sama, 
+        // atau buat file baru dapur-single.pdf jika strukturnya berbeda)
+        $pdf = Pdf::loadView('dapur.single-order-pdf', compact('order', 'carbonDate'));
+
+        // 4. Susun nama file agar unik berdasarkan nama bangsal dan tanggalnya
+        $filename = sprintf(
+            'Form-Makanan-%s-%s.pdf',
+            str_replace(' ', '-', $order->bangsal->nama_bangsal),
+            $carbonDate->format('Y-m-d')
+        );
+
+        // 5. Stream PDF ke browser
         return $pdf->stream($filename);
     }
 }

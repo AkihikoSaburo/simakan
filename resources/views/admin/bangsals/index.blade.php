@@ -11,7 +11,6 @@
 <body class="bg-brand-snow font-sans text-brand-dark antialiased min-h-screen flex flex-col">
 
     <x-layout.navbar title="Manajemen Bangsal" icon="fa-hospital" />
-    <x-layout.subnav />
 
     <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
 
@@ -23,7 +22,12 @@
         @endif
 
         <div class="flex items-center justify-between">
-            <div>
+            <div class="flex items-center gap-3">
+                <a href="{{ route('admin.dashboard') }}"
+                    class="inline-flex items-center justify-center w-9 h-9 bg-white border border-brand-light text-brand-gray hover:text-brand-dark hover:border-brand-primary/40 rounded-xl shadow-sm transition-all hover:scale-105"
+                    title="Kembali ke Dashboard">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </a>
                 <h2 class="text-xl font-extrabold tracking-tight text-brand-dark">Daftar Ruang Bangsal</h2>
                 <p class="text-xs text-brand-gray mt-0.5">Kelola seluruh daftar bangsal/ruang rawat inap di rumah sakit.</p>
             </div>

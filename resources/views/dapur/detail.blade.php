@@ -35,16 +35,13 @@
             </div>
             
             <div class="flex items-center gap-3">
-                {{-- Kembali ke dashboard dapur utama --}}
                 <a href="{{ route('dapur.dashboard') }}"
                     class="inline-flex items-center gap-1.5 px-4 py-2.5 border border-brand-light text-brand-slate font-bold text-xs rounded-xl hover:bg-brand-light/30 transition-colors shadow-sm bg-white">
                     <i class="fa-solid fa-arrow-left"></i> Kembali ke Dashboard
                 </a>
-    
-                {{-- TEMBAK KE ROUTE bangsal.orders.pdf DENGAN PARAMETER $order --}}
-                <a href="{{ route('bangsal.orders.pdf', $order) }}" target="_blank"
+                <a href="{{ route('dapur.orders.pdf', $order) }}" target="_blank"
                     class="inline-flex items-center gap-1.5 px-4 py-2.5 bg-rose-600 hover:bg-rose-700 text-brand-snow font-bold text-xs rounded-xl shadow-md transition-colors">
-                    <i class="fa-solid fa-file-pdf"></i> Cetak PDF Form
+                    <i class="fa-solid fa-file-pdf"></i> Cetak PDF
                 </a>
             </div>
         </div>

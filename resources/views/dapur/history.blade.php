@@ -64,11 +64,8 @@
                         <div>
                             <div class="flex justify-between items-start mb-4">
                                 <div class="space-y-1">
-                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-brand-light text-brand-primary border border-brand-primary/20">
-                                        <i class="fa-solid fa-calendar-day"></i> Harian
-                                    </span>
                                     <h3 class="font-black text-base text-brand-dark leading-tight pt-1">
-                                        Riwayat Pesanan - {{ $dateItem->tanggal_pesanan->locale('id')->translatedFormat('l, d F Y') }}
+                                        {{ $dateItem->tanggal_pesanan->locale('id')->translatedFormat('l, d F Y') }}
                                     </h3>
                                 </div>
                                 <div class="text-2xl text-brand-primary">

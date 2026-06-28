@@ -4,12 +4,18 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Setting; // Pastikan model Setting di-import di sini
 
 class AuthController extends Controller
 {
     public function showLogin()
     {
-        return view('login');
+        // Ambil data pengaturan dinamis dari database menggunakan key-value
+        $nama_rumah_sakit = Setting::get('nama_rumah_sakit', 'RSUD Andi Makkasau');
+        $bg_login = Setting::get('bg_login');
+
+        // Lempar variabel ke file view login.blade.php
+        return view('login', compact('nama_rumah_sakit', 'bg_login'));
     }
 
     public function login(Request $request)
@@ -28,7 +34,7 @@ class AuthController extends Controller
             return match ($user->role) {
                 'superadmin' => redirect()->route('superadmin.dashboard'),
                 'admin'      => redirect()->route('admin.dashboard'),
-                'dapur'    => redirect()->route('dapur.dashboard'),
+                'dapur'      => redirect()->route('dapur.dashboard'),
                 'bangsal'    => redirect()->route('bangsal.dashboard'),
                 default      => abort(403, 'Role tidak dikenali'),
             };

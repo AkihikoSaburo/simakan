@@ -16,9 +16,24 @@
     <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
 
         <x-ui.welcome-card title="Selamat Datang di Portal Bangsal 👋"
-            description="Silakan input lembar permintaan makanan pasien Anda hari ini."
-            :button-text="'Buat Permintaan Baru'" :button-route="route('bangsal.orders.create')"
-            :button-icon="'fa-solid fa-circle-plus'" />
+            description="Silakan input lembar permintaan makanan pasien Anda hari ini." />
+        
+        <x-layout.action-grid :actions="[
+        [
+            'title' => 'Buat Permintaan Baru',
+            'description' => 'Buat lembar permintaan makanan untuk pasien.',
+            'icon' => 'fa-user-plus',
+            'color' => 'success',
+            'href' => route('bangsal.orders.create'),
+        ],
+        [
+            'title' => 'Riwayat Pengiriman Form',
+            'description' => 'Lihat riwayat pengiriman form makanan.',
+            'icon' => 'fa-clock-rotate-left',
+            'color' => 'info',
+            'href' => route('bangsal.riwayat'),
+        ]
+    ]" />
 
         <x-layout.stats-grid :stats="[
         [
@@ -82,7 +97,12 @@
                                 </td>
                                 
                                 <td class="py-3 px-4 font-mono text-brand-slate">
-                                    {{ $detail->patient->no_rm ?? '-' }}
+                                    @if(!empty($detail->patient->no_rm) && strlen($detail->patient->no_rm) === 6)
+                                        {{-- Mengubah 123456 menjadi 12.34.56 --}}
+                                        {{ preg_replace("/([0-9]{2})([0-9]{2})([0-9]{2})/", "$1.$2.$3", $detail->patient->no_rm) }}
+                                    @else
+                                        {{ $detail->patient->no_rm ?? '-' }}
+                                    @endif
                                 </td>
                                 
                                 <td class="py-3 px-4 text-brand-slate">
@@ -136,8 +156,6 @@
                 </table>
             </div>
         </div>
-
-        <x-bangsal.order-history :orders="$orders" />
     </main>
 
     <x-layout.footer />

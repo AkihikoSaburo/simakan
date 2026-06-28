@@ -22,24 +22,28 @@
             'title' => 'Tambah Admin',
             'description' => 'Daftarkan administrator baru untuk rumah sakit.',
             'icon' => 'fa-user-plus',
+            'color' => 'success', // Hijau: Menandakan aksi menambah/membuat data baru
             'modal' => 'create-admin',
         ],
         [
             'title' => 'Backup Database',
             'description' => 'Buat salinan database sebelum melakukan perubahan.',
             'icon' => 'fa-database',
+            'color' => 'info', // Biru/Sky: Menandakan proses utilitas atau informasi sistem
             'href' => route('superadmin.database.backup'),
         ],
         [
             'title' => 'Restore Database',
             'description' => 'Pulihkan database dari file backup.',
             'icon' => 'fa-rotate-left',
+            'color' => 'warning', // Amber/Orange: Peringatan karena aksi ini menimpa data yang ada
             'modal' => 'restore-database',
         ],
         [
             'title' => 'Pengaturan Profil',
             'description' => 'Ubah username dan password akun superadmin Anda.',
             'icon' => 'fa-user-gear',
+            'color' => 'default', // Putih/Bawaan: Aksi standar/navigasi biasa
             'href' => route('superadmin.profile.edit'),
         ]
     ]" />
@@ -101,9 +105,9 @@
 
                                 {{-- Tombol Edit: Membuka modal global dan mengirim data admin via Alpine --}}
                                 <button type="button" @click="$store.modal.open('edit-admin', { 
-                                                                                username: '{{ $admin->username }}', 
-                                                                                action: '{{ route('superadmin.administrators.update', $admin->id) }}' 
-                                                                            })"
+                                                                                    username: '{{ $admin->username }}', 
+                                                                                    action: '{{ route('superadmin.administrators.update', $admin->id) }}' 
+                                                                                })"
                                     class="inline-flex items-center gap-2 rounded-xl border border-amber-200 bg-amber-50 px-4 py-2 text-sm font-medium text-amber-700 transition-colors hover:bg-amber-100">
                                     <i class="fa-solid fa-pen-to-square"></i>
                                     Edit
@@ -115,9 +119,9 @@
                                     @method('DELETE')
 
                                     <button type="button" @click="$store.modal.open('delete-admin', { 
-                                                            username: '{{ $admin->username }}', 
-                                                            action: '{{ route('superadmin.administrators.destroy', $admin->id) }}' 
-                                                        })"
+                                                                username: '{{ $admin->username }}', 
+                                                                action: '{{ route('superadmin.administrators.destroy', $admin->id) }}' 
+                                                            })"
                                         class="inline-flex items-center gap-2 rounded-xl border border-rose-200 bg-rose-50 px-4 py-2 text-sm font-medium text-rose-700 transition-colors hover:bg-rose-100">
                                         <i class="fa-solid fa-trash-can"></i>
                                         Hapus

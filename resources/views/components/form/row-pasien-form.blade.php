@@ -61,9 +61,32 @@
 
     <!-- NO. RM (Terisi Otomatis) -->
     <td class="py-3 px-3">
-        <input type="text" :name="'pasiens['+index+'][no_rm]'" x-model="pasien.no_rm"
-            @input="pasien.no_rm = pasien.no_rm.replace(/[^0-9]/g, '');" required placeholder="00-00-00"
-            class="form-input font-mono w-full">
+        <div x-data="{
+            formatRM(value) {
+                let num = (value || '').replace(/[^0-9]/g, '').slice(0, 6);
+                if (num.length > 4) return `${num.slice(0, 2)}.${num.slice(2, 4)}.${num.slice(4, 6)}`;
+                if (num.length > 2) return `${num.slice(0, 2)}.${num.slice(2, 4)}`;
+                return num;
+            }
+        }">
+            {{-- Input Utama --}}
+            <input type="text" 
+                :value="formatRM(pasien.no_rm)"
+                @input="
+                    let raw = $event.target.value.replace(/[^0-9]/g, '').slice(0, 6);
+                    pasien.no_rm = raw;
+                    $event.target.value = formatRM(raw);
+                "
+                required 
+                maxlength="8"
+                pattern="[0-9]{2}\.[0-9]{2}\.[0-9]{2}" {{-- Mengunci format agar wajib pas 6 angka (2 digit . 2 digit . 2 digit) --}}
+                title="Nomor RM harus terpenuhi sebanyak 6 digit angka."
+                placeholder="00.00.00"
+                class="form-input font-mono w-full">
+
+            {{-- Hidden Input --}}
+            <input type="hidden" :name="'pasiens['+index+'][no_rm]'" x-model="pasien.no_rm">
+        </div>
     </td>
 
     <!-- KAMAR / KELAS (Terisi Otomatis) -->
