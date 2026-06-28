@@ -25,9 +25,9 @@
         <x-ui.welcome-card
             title="Monitoring Permintaan Makanan 🍽️"
             description="Pantau seluruh permintaan makanan pasien yang dikirim oleh bangsal hari ini."
-            :button-text="'Riwayat Permintaan'"
-            :button-route="route('dapur.history')"
-            :button-icon="'fa-solid fa-clock-rotate-left'"
+            :button-text="'Dashboard Dapur'"
+            :button-route="route('dapur.dashboard')"
+            :button-icon="'fa-solid fa-chart-line'"
         />
 
         <x-dapur.order-monitoring :orders="$orders" />
