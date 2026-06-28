@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use App\Models\Setting;
 use Illuminate\Http\Request;
 
-class AdminSettingsController extends Controller
+class SettingsController extends Controller
 {
     /**
      * Show the system settings form.
