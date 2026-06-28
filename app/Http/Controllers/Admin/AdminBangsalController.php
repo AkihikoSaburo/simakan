@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Bangsal;
 use Illuminate\Http\Request;
+use App\Models\Order;
+use App\Models\Patient;
 
 class AdminBangsalController extends Controller
 {
@@ -80,10 +82,56 @@ class AdminBangsalController extends Controller
      */
     public function destroy(Bangsal $bangsal)
     {
+        // 1. Reset relasi user: Staf yang tadinya di bangsal ini diubah menjadi null (Belum Ditentukan)
+        $bangsal->users()->update(['bangsal_id' => null]);
+
+        // 2. Lakukan Soft Delete (Otomatis masuk ke gudang arsip karena ada trait SoftDeletes)
         $bangsal->delete();
 
         return redirect()
             ->route('admin.bangsals.index')
-            ->with('success', 'Bangsal berhasil dihapus.');
+            ->with('success', 'Bangsal ' . $bangsal->nama_bangsal . ' berhasil diarsipkan. Akses pengguna terikat telah di-reset.');
+    }
+
+    // Method untuk menampilkan semua CARD bangsal yang diarsipkan
+    public function arsipIndex()
+    {
+        // Mengambil bangsal yang di-soft-delete beserta hitungan relasi historisnya
+        $bangsalsDiarsip = Bangsal::onlyTrashed()
+            ->withCount(['orders', 'patients'])
+            ->latest('deleted_at')
+            ->get();
+
+        return view('admin.bangsals.arsip', compact('bangsalsDiarsip'));
+    }
+
+    // Method untuk melihat detail isi history pesanan dari bangsal yang diarsipkan
+    public function arsipShow($id)
+    {
+        $bangsal = Bangsal::onlyTrashed()->findOrFail($id);
+
+        // Tampung kueri dasar pesanan
+        $orders = Order::where('bangsal_id', $id)
+            ->with('creator')
+            ->latest();
+
+        // JIKA FORM FILTER TANGGAL DIKLIK, SARING DATA SESUAI REQUEST
+        if (request()->filled('date')) {
+            $orders->whereDate('tanggal_pesanan', request('date'));
+        }
+
+        // Eksekusi pagination setelah proses kondisional filter selesai
+        $orders = $orders->paginate(10);
+
+        return view('admin.bangsals.arsip-show', compact('bangsal', 'orders'));
+    }
+
+    public function arsipOrderDetail(Order $order)
+    {
+        // Pastikan kueri memuat relasi data yang dibutuhkan
+        $order->load(['bangsal' => function ($q) {
+            $q->withTrashed(); }, 'creator', 'orderDetails.patient']);
+
+        return view('admin.bangsals.arsip-detail', compact('order'));
     }
 }

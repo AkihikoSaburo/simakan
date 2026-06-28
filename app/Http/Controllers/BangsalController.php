@@ -18,16 +18,25 @@ class BangsalController extends Controller
     /**
      * Display the ward dashboard.
      */
-    public function dashboard(): View
+    public function dashboard()
     {
-        $bangsal = auth()->user()->bangsal;
+        $user = auth()->user();
 
-        $todayOrders = $bangsal->orders()
-            ->whereDate('tanggal_pesanan', today())
-            ->with(['orderDetails.patient', 'creator'])
-            ->get();
+        // JARING PENGAMAN: Jika user tidak terikat dengan bangsal aktif apa pun
+        if (!$user->bangsal_id || !$user->bangsal) {
+            // Pilihan 1: Lempar ke view khusus pemberitahuan terisolasi
+            return view('bangsal.no_bangsal');
 
-        return view('bangsal.dashboard', compact('todayOrders'));
+            // Pilihan 2: Atau logout otomatis dan kembalikan ke login dengan pesan eror
+            // auth()->logout();
+            // return redirect()->route('login')->withErrors(['username' => 'Akun Anda belum dikaitkan ke bangsal aktif mana pun. Silakan hubungi Admin.']);
+        }
+
+        // Kode lamamu di bawah ini sekarang dijamin aman dari crash null
+        $bangsal = $user->bangsal;
+        $orders = $bangsal->orders()->latest()->paginate(10);
+
+        return view('bangsal.dashboard', compact('orders', 'bangsal'));
     }
 
     public function riwayat(Request $request): View
@@ -147,31 +156,22 @@ class BangsalController extends Controller
     /**
      * Export single order request as PDF for Dapur Gizi.
      */
-    public function exportSingleOrderPdf(Order $order)
+    public function exportSingleOrderPdf($id)
     {
-        // 1. Load semua relasi yang dibutuhkan agar tidak terkena N+1 query issue
+        // Jika rute memakai Route Model Binding (public function exportSingleOrderPdf(Order $order))
+        // Kamu bisa panggil load() dengan query constraint:
+        $order = Order::findOrFail($id); // atau langsung gunakan variabel $order yang ada
+
         $order->load([
-            'bangsal', 
-            'orderDetails.patient', 
-            'creator'
+            'bangsal' => function ($query) {
+                $query->withTrashed(); // TETAP AMBIL WALAUPUN SUDAH DIARSIPKAN
+            },
+            'creator',
+            'orderDetails.patient'
         ]);
 
-        // 2. Gunakan Carbon untuk format tanggal di dalam PDF jika dibutuhkan
-        $carbonDate = $order->tanggal_pesanan;
-
-        // 3. Arahkan ke view PDF (kamu bisa pakai view dapur.pdf yang sama, 
-        // atau buat file baru dapur-single.pdf jika strukturnya berbeda)
-        $pdf = Pdf::loadView('bangsal.pdf', compact('order', 'carbonDate'));
-
-        // 4. Susun nama file agar unik berdasarkan nama bangsal dan tanggalnya
-        $filename = sprintf(
-            'Form-Makanan-%s-%s.pdf',
-            str_replace(' ', '-', $order->bangsal->nama_bangsal),
-            $carbonDate->format('Y-m-d')
-        );
-
-        // 5. Stream PDF ke browser
-        return $pdf->stream($filename);
+        $pdf = Pdf::loadView('bangsal.pdf', compact('order'));
+        return $pdf->stream('Form-Makanan-' . $order->id . '.pdf');
     }
 
     /**

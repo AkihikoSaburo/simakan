@@ -32,6 +32,13 @@
             'href' => route('admin.bangsals.index'),
         ],
         [
+            'title' => 'Gudang Arsip Bangsal',
+            'description' => 'Lihat rekapitulasi data historis dan riwayat dari bangsal yang telah dinonaktifkan.',
+            'icon' => 'fa-box-archive', // Ikon kotak arsip yang cocok
+            'color' => 'warning', // Warna amber/kuning tua yang identik dengan folder arsip lama
+            'href' => route('admin.bangsals.arsip'),
+        ],
+        [
             'title' => 'Pengaturan Sistem',
             'description' => 'Konfigurasi parameter aplikasi, integrasi, dan preferensi sistem.',
             'icon' => 'fa-sliders', // Diganti ke fa-sliders atau fa-gear yang lebih cocok untuk pengaturan

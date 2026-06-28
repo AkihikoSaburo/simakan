@@ -7,7 +7,7 @@
         </h2>
     </x-slot:header>
 
-    {{-- Action URL diikat otomatis ke payload action destroy --}}
+    {{-- 1. Pastikan ID Form di sini --}}
     <form id="delete-user-form" :action="$store.modal.payload?.action" method="POST" @submit="loading = true">
         @csrf
         @method('DELETE')
@@ -29,10 +29,10 @@
             Batal
         </button>
 
-        {{-- Mengikat status disabled & loading ke state form di atas --}}
-        <button type="submit" form="delete-admin-form" 
+        {{-- 2. Atribut form di bawah diganti ke delete-user-form & x-data tumpang tindih dihapus --}}
+        <button type="submit" form="delete-user-form" 
             x-data="{ loading: false }"
-            @submit.window="$event.target.id === 'delete-admin-form' ? loading = true : null"
+            @submit.window="$event.target.id === 'delete-user-form' ? loading = true : null"
             :disabled="loading"
             class="inline-flex items-center justify-center rounded-xl bg-rose-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-rose-700 disabled:cursor-not-allowed disabled:opacity-60">
 

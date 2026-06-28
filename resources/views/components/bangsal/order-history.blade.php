@@ -1,12 +1,19 @@
 @props([
     'orders',
+    'bangsalName' => null, // Tambahkan properti opsional ini
 ])
 
 <div {{ $attributes->merge(['class' => 'bg-brand-snow rounded-xl border border-brand-light shadow-sm overflow-hidden']) }}>
    <div class="p-5 border-b border-brand-light flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
             <h3 class="font-bold text-brand-dark text-lg">Riwayat Pengiriman Form</h3>
-            <p class="text-brand-gray text-xs mt-0.5">Menampilkan seluruh data log permintaan makanan dari {{ auth()->user()->bangsal->nama_bangsal ?? 'Bangsal' }}</p>
+            {{-- Modifikasi baris p di bawah ini agar fleksibel --}}
+            <p class="text-brand-gray text-xs mt-0.5">
+                Menampilkan seluruh data log permintaan makanan dari 
+                <span class="font-semibold text-brand-primary">
+                    {{ $bangsalName ?? (auth()->user()->bangsal->nama_bangsal ?? 'Bangsal') }}
+                </span>
+            </p>
         </div>
 
         {{-- BUNGKUS DENGAN FORM GET METHOD --}}
@@ -63,10 +70,9 @@
                         </td>
 
                         <td class="py-4 px-5 text-center">
-                            <a href="{{ route('bangsal.orders.show', $order) }}"
-                                class="text-brand-primary hover:text-brand-accent font-bold text-xs inline-flex items-center gap-1 bg-brand-light/60 hover:bg-brand-light px-3 py-1.5 rounded-lg transition-colors">
-                                <i class="fa-solid fa-eye"></i>
-                                Lihat Detail
+                            <a href="{{ request()->is('admin/*') ? route('admin.arsip.orders.show', $order) : route('bangsal.orders.show', $order) }}"
+                            class="text-brand-primary hover:text-brand-accent font-bold text-xs inline-flex items-center gap-1 bg-brand-light/60 hover:bg-brand-light px-3 py-1.5 rounded-lg transition-colors">
+                                <i class="fa-solid fa-eye"></i> Lihat Detail
                             </a>
                         </td>
                     </tr>

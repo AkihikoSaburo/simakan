@@ -65,6 +65,9 @@ Route::middleware('auth')->group(function () {
             'destroy' => 'admin.users.destroy',
         ]);
 
+        Route::get('/admin/arsip/orders/{order}', [AdminBangsalController::class, 'arsipOrderDetail'])
+            ->name('admin.arsip.orders.show');
+
         // Manage Bangsals
         Route::resource('/admin/bangsals', AdminBangsalController::class)->names([
             'index' => 'admin.bangsals.index',
@@ -80,6 +83,11 @@ Route::middleware('auth')->group(function () {
             ->name('admin.settings.edit');
         Route::put('/admin/settings', [SettingsController::class, 'update'])
             ->name('admin.settings.update');
+
+        Route::get('/admin/arsip/bangsals', [AdminBangsalController::class, 'arsipIndex'])
+            ->name('admin.bangsals.arsip');
+        Route::get('/admin/arsip/bangsals/{id}', [AdminBangsalController::class, 'arsipShow'])
+            ->name('admin.bangsals.arsip.show');
     });
 
     // Bangsal Routes (Admin & Superadmin Bisa Akses)
@@ -107,15 +115,15 @@ Route::middleware('auth')->group(function () {
     // Dapur Routes (Admin & Superadmin Bisa Akses)
     Route::middleware('role:dapur,admin,superadmin')->group(function () {
         Route::get('/dapur/dashboard', [DapurController::class, 'dashboard'])
-          ->name('dapur.dashboard');
+            ->name('dapur.dashboard');
         Route::get('/dapur/orders/{order}', [DapurController::class, 'show'])
-          ->name('dapur.orders.show');
+            ->name('dapur.orders.show');
         Route::get('/dapur/orders/{order}/pdf', [DapurController::class, 'exportSingleOrderPdf'])
             ->name('dapur.orders.pdf');
         Route::get('/dapur/history', [DapurController::class, 'history'])
-          ->name('dapur.history');
+            ->name('dapur.history');
         Route::get('/dapur/history/pdf/{date}', [DapurController::class, 'exportDailyPdf'])
-          ->name('dapur.history.pdf');
+            ->name('dapur.history.pdf');
     });
 });
 

@@ -33,9 +33,9 @@
             Batal
         </button>
 
-        <button type="submit" form="delete-admin-form" 
+        <button type="submit" form="delete-bangsal-form" 
             x-data="{ loading: false }"
-            @submit.window="$event.target.id === 'delete-admin-form' ? loading = true : null"
+            @submit.window="$event.target.id === 'delete-bangsal-form' ? loading = true : null"
             :disabled="loading"
             class="inline-flex items-center justify-center rounded-xl bg-rose-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-rose-700 disabled:cursor-not-allowed disabled:opacity-60">
 
