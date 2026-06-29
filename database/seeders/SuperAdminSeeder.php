@@ -10,12 +10,14 @@ class SuperAdminSeeder extends Seeder
 {
     public function run(): void
     {
-        $password = Hash::make('password');
 
-        User::updateOrCreate([
-            'username' => 'superadmin',
-            'role' => 'superadmin',
-            'password' => $password,
-        ]);
+        User::updateOrCreate(
+            ['username' => 'superadmin'],
+            [
+                'role' => 'superadmin',
+                'password' => Hash::make('password'),
+                'bangsal_id' => null,
+            ]
+        );
     }
 }
