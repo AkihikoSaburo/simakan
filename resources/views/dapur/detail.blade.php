@@ -75,8 +75,13 @@
                                     {{ $detail->patient->nama ?? 'Tanpa Nama' }}
                                 </td>
                                 
-                                <td class="py-3 px-4 font-mono text-brand-slate">
-                                    {{ $detail->patient->no_rm ?? '-' }}
+                                <td class="py-3 px-4 font-mono text-brand-slate tracking-wider">
+                                        @if($detail->patient?->no_rm)
+                                            {{-- Mengubah 6 angka mentah menjadi format XX.XX.XX menggunakan regex PHP --}}
+                                            {{ preg_replace('/(\d{2})(\d{2})(\d{2})/', '$1.$2.$3', $detail->patient->no_rm) }}
+                                        @else
+                                            -
+                                        @endif
                                 </td>
                                 
                                 <td class="py-3 px-4 text-brand-slate">

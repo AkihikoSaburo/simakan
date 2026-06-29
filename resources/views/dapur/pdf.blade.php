@@ -209,12 +209,13 @@
             $cairCount = $order->orderDetails->where('makanan_cair', true)->count();
             $bsCount = $order->orderDetails->where('bs', true)->count();
             $sondeCount = $order->orderDetails->where('sonde', true)->count();
-            
-            $puasaCount = $order->orderDetails->filter(fn($detail) => 
-                !$detail->nasi && 
-                !$detail->bubur && 
-                !$detail->makanan_cair && 
-                !$detail->bs && 
+
+            $puasaCount = $order->orderDetails->filter(
+                fn($detail) =>
+                !$detail->nasi &&
+                !$detail->bubur &&
+                !$detail->makanan_cair &&
+                !$detail->bs &&
                 !$detail->sonde
             )->count();
         @endphp
@@ -224,11 +225,13 @@
             <table class="header-container">
                 <tr>
                     <td>
-                        <div class="hospital-name">{{ \App\Models\Setting::get('nama_rumah_sakit', 'RSUD Andi Makkasau') }}</div>
+                        <div class="hospital-name">{{ \App\Models\Setting::get('nama_rumah_sakit', 'RSUD Andi Makkasau') }}
+                        </div>
                         <div class="hospital-sub">Instalasi Gizi </div>
                     </td>
                     <td class="meta-info" style="width: 45%;">
-                        <div style="margin-bottom: 2px;">Ruangan / Bangsal: <strong>{{ $order->bangsal->nama_bangsal }}</strong></div>
+                        <div style="margin-bottom: 2px;">Ruangan / Bangsal:
+                            <strong>{{ $order->bangsal->nama_bangsal }}</strong></div>
                         <div>Tanggal: <strong>{{ $order->tanggal_pesanan->format('d / m / Y') }}</strong></div>
                     </td>
                 </tr>
@@ -267,7 +270,13 @@
                             <td class="text-center">{{ $no++ }}</td>
                             <td class="text-center">{{ $detail->patient->kamar ?? '-' }}</td>
                             <td class="font-bold">{{ $detail->patient->nama ?? 'Tanpa Nama' }}</td>
-                            <td class="text-center" style="font-family: monospace;">{{ $detail->patient->no_rm ?? '-' }}</td>
+                            <td class="text-center" style="font-family: monospace;">
+                                @if($detail->patient?->no_rm)
+                                    {{ preg_replace('/(\d{2})(\d{2})(\d{2})/', '$1.$2.$3', $detail->patient->no_rm) }}
+                                @else
+                                    -
+                                @endif
+                            </td>
                             <td class="text-center">
                                 {{ $detail->patient->tanggal_lahir ? \Carbon\Carbon::parse($detail->patient->tanggal_lahir)->format('d/m/Y') : '-' }}
                             </td>

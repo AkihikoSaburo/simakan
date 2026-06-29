@@ -149,7 +149,7 @@
                                                 <div class="flex flex-wrap items-center gap-3 text-xs font-semibold text-brand-slate">
                                                     <span>
                                                         <i class="fa-solid fa-clock text-brand-primary mr-1"></i>
-                                                        Dikirim {{ $order->created_at->format('H:i') }} WITA
+                                                        Dikirim {{ $order->created_at->format('H:i') }} {{ $order->created_at->isoFormat('z') ?? $order->created_at->format('T') }}
                                                     </span>
                                                     <span class="w-1.5 h-1.5 bg-brand-light rounded-full hidden sm:inline"></span>
                                                     <span>
@@ -179,7 +179,13 @@
                                                             <tr class="hover:bg-brand-light/5 transition-colors align-top bg-white">
                                                                 <td class="py-2.5 px-3 text-center font-bold text-brand-gray">{{ $idx++ }}</td>
                                                                 <td class="py-2.5 px-3 font-semibold text-brand-dark">{{ $detail->patient->nama ?? 'Tanpa Nama' }}</td>
-                                                                <td class="py-2.5 px-3 font-mono text-brand-slate">{{ $detail->patient->no_rm ?? '-' }}</td>
+                                                                <td class="py-2.5 px-3 font-mono text-brand-slate tracking-wider">
+                                                                    @if($detail->patient?->no_rm)
+                                                                        {{ preg_replace('/(\d{2})(\d{2})(\d{2})/', '$1.$2.$3', $detail->patient->no_rm) }}
+                                                                    @else
+                                                                        -
+                                                                    @endif
+                                                                </td>
                                                                 <td class="py-2.5 px-3 text-brand-slate">{{ $detail->patient->kamar ?? '-' }}</td>
                                                                 <td class="py-2.5 px-3">
                                                                     <div class="flex flex-wrap gap-1">

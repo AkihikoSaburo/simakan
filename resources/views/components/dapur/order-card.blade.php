@@ -9,9 +9,9 @@
                 {{ $order->bangsal->nama_bangsal }}
             </h3>
 
-            <p class="text-xs text-brand-gray">
-                Dikirim {{ $order->created_at->format('H:i') }}
-            </p>
+<p class="text-xs text-brand-gray">
+    Dikirim {{ $order->created_at->format('H:i') }} {{ $order->created_at->isoFormat('z') ?? $order->created_at->format('T') }}
+</p>
         </div>
 
         <div class="text-2xl">
