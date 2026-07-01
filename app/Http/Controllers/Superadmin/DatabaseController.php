@@ -33,8 +33,10 @@ class DatabaseController extends Controller
         try {
             // 4. Perintah mysqldump untuk backup database
             // Jika di Windows (XAMPP), pastikan path 'mysqldump' terdaftar di Environment Variables, atau tulis path lengkapnya
+            $dumpBinary = env('DUMP_BINARY_PATH', 'mysqldump'); // Default ke 'mysqldump' jika tidak diatur
             $command = sprintf(
-                'mysqldump --host=%s --user=%s --password=%s %s > %s',
+                '%s --skip-ssl --host=%s --user=%s --password=%s %s > %s 2>&1', // <-- Tambahkan --skip-ssl
+                $dumpBinary,
                 escapeshellarg($dbHost),
                 escapeshellarg($dbUser),
                 escapeshellarg($dbPass),
@@ -81,21 +83,26 @@ class DatabaseController extends Controller
             return back()->with('error', 'Gagal: File harus berformat .sql');
         }
 
-        // 2. Ambil konfigurasi database
+        // 2. Ambil konfigurasi database (pindahkan file ke tempat aman dulu)
         $dbName = config('database.connections.mysql.database');
         $dbUser = config('database.connections.mysql.username');
         $dbPass = config('database.connections.mysql.password');
         $dbHost = config('database.connections.mysql.host');
 
-        $filePath = $file->getRealPath();
+        // PINDAHKAN FILE DARI TMP KE STORAGE BIAR AMAN DIBACA SISTEM
+        $tempFilename = 'restore-' . time() . '.sql';
+        $file->move(storage_path('app/backups'), $tempFilename);
+        $filePath = storage_path('app/backups/' . $tempFilename);
 
         try {
-            // 3. Matikan foreign key checks sementara agar proses restore tidak terhambat relasi antar tabel
             DB::statement('SET FOREIGN_KEY_CHECKS=0;');
 
-            // 4. Jalankan perintah mysql lewat shell untuk import file .sql
+            $mysqlBinary = env('MYSQL_BINARY_PATH', 'mysql');
+
+            // Gunakan sintaks standar yang disempurnakan
             $command = sprintf(
-                'mysql --host=%s --user=%s --password=%s %s < %s',
+                '%s --skip-ssl --host=%s --user=%s --password=%s %s < %s 2>&1',
+                $mysqlBinary,
                 escapeshellarg($dbHost),
                 escapeshellarg($dbUser),
                 escapeshellarg($dbPass),
@@ -105,11 +112,16 @@ class DatabaseController extends Controller
 
             exec($command, $output, $returnVar);
 
-            // Hidupkan kembali foreign key checks
             DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
+            // HAPUS FILE TEMPORARY SETELAH RESTORE SELESAI
+            if (file_exists($filePath)) {
+                unlink($filePath);
+            }
+
             if ($returnVar !== 0) {
-                throw new \Exception('Terjadi kesalahan saat mengeksekusi import database mysql.');
+                $errorReason = implode(' ', $output);
+                throw new \Exception($errorReason);
             }
 
             return redirect()
@@ -118,7 +130,53 @@ class DatabaseController extends Controller
 
         } catch (\Exception $e) {
             DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+            // Hapus juga jika gagal
+            if (file_exists($filePath)) {
+                unlink($filePath);
+            }
             return back()->with('error', 'Gagal memulihkan database: ' . $e->getMessage());
         }
+
+        // 2. Ambil konfigurasi database
+        // $dbName = config('database.connections.mysql.database');
+        // $dbUser = config('database.connections.mysql.username');
+        // $dbPass = config('database.connections.mysql.password');
+        // $dbHost = config('database.connections.mysql.host');
+
+        // $filePath = $file->getRealPath();
+
+        // try {
+        //     // 3. Matikan foreign key checks sementara agar proses restore tidak terhambat relasi antar tabel
+        //     DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+
+        //     // 4. Jalankan perintah mysql lewat shell untuk import file .sql
+        //     $mysqlBinary = env('MYSQL_BINARY_PATH', 'mysql'); // Default ke 'mysql' jika tidak diatur
+        //     $command = sprintf(
+        //         '%s --skip-ssl --host=%s --user=%s --password=%s %s < %s 2>&1', // <-- Tambahkan --skip-ssl
+        //         $mysqlBinary,
+        //         escapeshellarg($dbHost),
+        //         escapeshellarg($dbUser),
+        //         escapeshellarg($dbPass),
+        //         escapeshellarg($dbName),
+        //         escapeshellarg($filePath)
+        //     );
+
+        //     exec($command, $output, $returnVar);
+
+        //     // Hidupkan kembali foreign key checks
+        //     DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+
+        //     if ($returnVar !== 0) {
+        //         throw new \Exception('Terjadi kesalahan saat mengeksekusi import database mysql.');
+        //     }
+
+        //     return redirect()
+        //         ->route('superadmin.dashboard')
+        //         ->with('success', 'Database berhasil dipulihkan (Restore) ke kondisi semula.');
+
+        // } catch (\Exception $e) {
+        //     DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        //     return back()->with('error', 'Gagal memulihkan database: ' . $e->getMessage());
+        // }
     }
 }

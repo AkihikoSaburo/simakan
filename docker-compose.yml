@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  simakan_app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: simakan_app
+    restart: unless-stopped
+    ports:
+      - "8000:80"
+    env_file:
+      - .env
+    volumes:
+      - ./storage:/var/www/html/storage
+    depends_on:
+      - simakan_db
+
+  simakan_db:
+    image: mariadb:12.3
+    container_name: simakan_db
+    restart: unless-stopped
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: simakan_db
+      MYSQL_USER: simakan_user
+      MYSQL_PASSWORD: simakan_password
+      MYSQL_ROOT_PASSWORD: root_secure_password
+    volumes:
+      - simakan_db_data:/var/lib/mysql
+
+volumes:
+  simakan_db_data:
+    driver: local
